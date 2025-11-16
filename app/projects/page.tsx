@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Project, parseToonFile, getTagColor } from "@/lib/toon-parser";
 import Link from "next/link";
 
@@ -36,39 +36,42 @@ export default function ProjectsPage() {
     loadProjects();
   }, []);
 
-  // Filter projects (memoized to prevent infinite loop)
-  const filteredProjects = useMemo(() => {
-    return allProjects.filter((project) => {
-      const matchesSearch =
-        searchQuery === "" ||
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.summary.toLowerCase().includes(searchQuery.toLowerCase());
+  // Filter projects
+  const filteredProjects = allProjects.filter((project) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.summary.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesTag = !selectedTag || project.tags.includes(selectedTag);
-      const matchesRole = !selectedRole || project.roles.includes(selectedRole);
+    const matchesTag = !selectedTag || project.tags.includes(selectedTag);
+    const matchesRole = !selectedRole || project.roles.includes(selectedRole);
 
-      return matchesSearch && matchesTag && matchesRole;
-    });
-  }, [allProjects, searchQuery, selectedTag, selectedRole]);
+    return matchesSearch && matchesTag && matchesRole;
+  });
+
+  // Load more projects when reaching bottom
+  const loadMore = useCallback(() => {
+    const startIndex = 0;
+    const endIndex = page * ITEMS_PER_PAGE;
+    const newProjects = filteredProjects.slice(startIndex, endIndex);
+
+    setDisplayedProjects(newProjects);
+    setHasMore(endIndex < filteredProjects.length);
+  }, [page, filteredProjects]);
 
   // Reset pagination when filters change
   useEffect(() => {
     setPage(1);
     setDisplayedProjects(filteredProjects.slice(0, ITEMS_PER_PAGE));
     setHasMore(ITEMS_PER_PAGE < filteredProjects.length);
-  }, [filteredProjects]);
+  }, [searchQuery, selectedTag, selectedRole, filteredProjects]);
 
   // Load more projects when page changes
   useEffect(() => {
     if (page > 1) {
-      const startIndex = 0;
-      const endIndex = page * ITEMS_PER_PAGE;
-      const newProjects = filteredProjects.slice(startIndex, endIndex);
-
-      setDisplayedProjects(newProjects);
-      setHasMore(endIndex < filteredProjects.length);
+      loadMore();
     }
-  }, [page, filteredProjects]);
+  }, [page, loadMore]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -104,11 +107,7 @@ export default function ProjectsPage() {
   ).sort();
 
   // Format period display
-  const formatPeriod = (
-    start: string,
-    end: string | null,
-    isCurrent: boolean
-  ) => {
+  const formatPeriod = (start: string, end: string | null, isCurrent: boolean) => {
     const formatMonth = (dateStr: string) => {
       const [year, month] = dateStr.split("-");
       return `${year}年${month}月`;
@@ -118,16 +117,14 @@ export default function ProjectsPage() {
       return `${formatMonth(start)} 〜 現在`;
     }
 
-    return end
-      ? `${formatMonth(start)} 〜 ${formatMonth(end)}`
-      : formatMonth(start);
+    return end ? `${formatMonth(start)} 〜 ${formatMonth(end)}` : formatMonth(start);
   };
 
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[#f8f9fa]">
       <div className="pt-4" />
 
-      <main className="mx-auto w-full max-w-[1400px] p-4 sm:p-6 lg:p-8">
+      <main className="mx-auto w-full max-w-4xl p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col gap-6">
           {/* Header */}
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -143,7 +140,7 @@ export default function ProjectsPage() {
 
           {/* Search and Filters */}
           <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex-grow relative">
+            <div className="grow">
               <label className="flex h-12 w-full min-w-40 flex-col">
                 <div className="flex h-full w-full flex-1 items-stretch rounded-lg">
                   <div className="flex items-center justify-center rounded-l-lg border-y border-l border-[#e5e7eb] bg-gray-50 pl-4 text-[#6b7280]">
@@ -160,7 +157,7 @@ export default function ProjectsPage() {
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-3 flex items-center h-full text-[#6b7280] hover:text-[#1f2937]"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7280] hover:text-[#1f2937]"
                     >
                       <span className="material-symbols-outlined">close</span>
                     </button>
@@ -183,7 +180,7 @@ export default function ProjectsPage() {
                 {selectedTag && (
                   <button
                     onClick={() => setSelectedTag(null)}
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#2b6cee] text-xs text-white"
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#2b6cee] text-white text-xs"
                   >
                     ×
                   </button>
@@ -203,7 +200,7 @@ export default function ProjectsPage() {
                 {selectedRole && (
                   <button
                     onClick={() => setSelectedRole(null)}
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#2b6cee] text-xs text-white"
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#2b6cee] text-white text-xs"
                   >
                     ×
                   </button>
@@ -264,11 +261,7 @@ export default function ProjectsPage() {
                           {project.summary}
                         </p>
                         <p className="mt-2 text-xs font-medium text-[#9ca3af]">
-                          {formatPeriod(
-                            project.period_start,
-                            project.period_end,
-                            project.is_current
-                          )}
+                          {formatPeriod(project.period_start, project.period_end, project.is_current)}
                         </p>
                       </div>
                       <button

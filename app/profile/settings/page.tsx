@@ -1,94 +1,105 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
+import TagManagement from "./_components/TagManagement";
+import QiitaIntegration from "./_components/QiitaIntegration";
+
+type SettingsTab = "profile" | "tags" | "qiita";
+
 export default function ProfileSettingsPage() {
+  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#F7F8FA]">
       <div className="flex h-full flex-1">
         <aside className="flex w-64 flex-col gap-8 border-r border-gray-200 bg-white p-4">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2 px-2 py-2">
-              <span className="material-symbols-outlined text-3xl text-[#4A90E2]">
-                terminal
+            <Link href="/" className="flex items-center gap-2 px-2 py-2">
+              <span className="material-symbols-outlined text-3xl text-[#2b6cee]">
+                folder_special
               </span>
               <h1 className="text-xl font-bold leading-normal text-gray-900">
                 TechFolio
               </h1>
-            </div>
+            </Link>
             <nav className="flex flex-col gap-2">
-              <a
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal text-gray-500 transition-colors hover:bg-gray-100"
-                href="#"
-              >
-                <span className="material-symbols-outlined">dashboard</span>
-                <p>ダッシュボード</p>
-              </a>
-              <a
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal text-gray-500 transition-colors hover:bg-gray-100"
-                href="#"
-              >
-                <span className="material-symbols-outlined">folder</span>
-                <p>ポートフォリオ</p>
-              </a>
-              <a
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal text-gray-500 transition-colors hover:bg-gray-100"
-                href="#"
-              >
-                <span className="material-symbols-outlined">person</span>
-                <p>プロフィール</p>
-              </a>
-              <a
-                className="flex items-center gap-3 rounded-lg bg-[#4A90E21A] px-3 py-2 text-sm font-medium leading-normal text-[#4A90E2]"
-                href="#"
+              <button
+                onClick={() => setActiveTab("profile")}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal transition-colors text-left ${
+                  activeTab === "profile"
+                    ? "bg-[#2b6cee]/10 text-[#2b6cee]"
+                    : "text-gray-500 hover:bg-gray-100"
+                }`}
               >
                 <span
                   className="material-symbols-outlined"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
+                  style={
+                    activeTab === "profile"
+                      ? { fontVariationSettings: "'FILL' 1" }
+                      : {}
+                  }
                 >
-                  settings
+                  person
                 </span>
-                <p>アカウント設定</p>
-              </a>
-              <a
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal text-gray-500 transition-colors hover:bg-gray-100"
-                href="#"
+                <p>プロフィール設定</p>
+              </button>
+              <button
+                onClick={() => setActiveTab("tags")}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal transition-colors text-left ${
+                  activeTab === "tags"
+                    ? "bg-[#2b6cee]/10 text-[#2b6cee]"
+                    : "text-gray-500 hover:bg-gray-100"
+                }`}
               >
-                <span className="material-symbols-outlined">article</span>
-                <p>ブログ</p>
-              </a>
+                <span
+                  className="material-symbols-outlined"
+                  style={
+                    activeTab === "tags"
+                      ? { fontVariationSettings: "'FILL' 1" }
+                      : {}
+                  }
+                >
+                  sell
+                </span>
+                <p>技術タグ管理</p>
+              </button>
+              <button
+                onClick={() => setActiveTab("qiita")}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal transition-colors text-left ${
+                  activeTab === "qiita"
+                    ? "bg-[#2b6cee]/10 text-[#2b6cee]"
+                    : "text-gray-500 hover:bg-gray-100"
+                }`}
+              >
+                <span
+                  className="material-symbols-outlined"
+                  style={
+                    activeTab === "qiita"
+                      ? { fontVariationSettings: "'FILL' 1" }
+                      : {}
+                  }
+                >
+                  link
+                </span>
+                <p>Qiita連携</p>
+              </button>
             </nav>
-          </div>
-          <div className="mt-auto flex flex-col gap-4">
-            <div className="flex items-center gap-3 px-2">
-              <div
-                className="size-10 aspect-square rounded-full bg-cover bg-center bg-no-repeat"
-                aria-hidden
-                style={{
-                  backgroundImage:
-                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBXkeTZJsoPgLq4f6ZgyLHe8RooizW1j6YPTrxe32KPIYA0kA7PTcDcQFZ6Z93JZrmIPtO9L5mc5GTVl5ftUSnKnxdik8E0z3R5Ezoqftrnxx_EKg2OpG_Xxan8ZO2v7yF3Jn2NI5yF1b5XgedgcZJbG47s6vJSfcx19eMv1o68xhNx1w1PXFKcPub90TDW--CS8VLMgDJZoLTLraQ3o3RpQn4jY26MJt82wcNoa6gJLn8a1stMb2zLN49ePuUQPwmcTIZRDHSDsLc-")',
-                }}
-              />
-              <div className="flex flex-col">
-                <h2 className="text-base font-medium leading-normal text-gray-900">
-                  Taro Yamada
-                </h2>
-                <p className="text-sm font-normal leading-normal text-gray-500">
-                  Web Developer
-                </p>
-              </div>
-            </div>
           </div>
         </aside>
 
         <main className="flex flex-1 flex-col p-6 md:p-10">
           <div className="mx-auto w-full max-w-4xl">
-            <header className="mb-8">
-              <h1 className="text-4xl font-black leading-tight tracking-[-0.033em] text-gray-900">
-                プロフィール編集
-              </h1>
-              <p className="mt-2 text-base font-normal leading-normal text-gray-500">
-                あなたの公開プロフィール情報を管理・編集します。
-              </p>
-            </header>
+            {activeTab === "profile" && (
+              <>
+                <header className="mb-8">
+                  <h1 className="text-4xl font-black leading-tight tracking-[-0.033em] text-gray-900">
+                    プロフィール編集
+                  </h1>
+                  <p className="mt-2 text-base font-normal leading-normal text-gray-500">
+                    あなたの公開プロフィール情報を管理・編集します。
+                  </p>
+                </header>
 
             <div className="flex flex-col gap-8">
               <section className="rounded-xl border border-gray-200 bg-white p-6">
@@ -323,15 +334,21 @@ export default function ProfileSettingsPage() {
                 </div>
               </section>
 
-              <div className="flex flex-col-reverse items-center justify-end gap-3 pt-4 sm:flex-row">
-                <button className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-white border border-gray-300 text-gray-700 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 transition-colors">
-                  <span className="truncate">キャンセル</span>
-                </button>
-                <button className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#4A90E2] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#4A90E2]/90 transition-colors">
-                  <span className="truncate">変更を保存</span>
-                </button>
+                <div className="flex flex-col-reverse items-center justify-end gap-3 pt-4 sm:flex-row">
+                  <button className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-white border border-gray-300 text-gray-700 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 transition-colors">
+                    <span className="truncate">キャンセル</span>
+                  </button>
+                  <button className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#2b6cee] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2b6cee]/90 transition-colors">
+                    <span className="truncate">変更を保存</span>
+                  </button>
+                </div>
               </div>
-            </div>
+              </>
+            )}
+
+            {activeTab === "tags" && <TagManagement />}
+
+            {activeTab === "qiita" && <QiitaIntegration />}
           </div>
         </main>
       </div>
