@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolio Manager - Login</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Noto+Sans+JP:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b6cee",
+                        "background": "#f8f9fa",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "Noto Sans JP", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+<body class="font-display">
+<div class="relative flex min-h-screen w-full flex-col bg-background group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 lg:px-10 py-4">
+<div class="flex items-center gap-3 text-gray-800">
+<div class="size-6 text-primary">
+<svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill-rule="evenodd"></path>
+<path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Portfolio Manager</h2>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-4 py-12 sm:py-16">
+<div class="w-full max-w-md space-y-8">
+<div>
+<h1 class="text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">ポートフォリオ管理を、<br/>シンプルに。</h1>
+<p class="mt-4 text-center text-base text-gray-600">パスワード不要で安全にログインできます。</p>
+</div>
+<div class="bg-white p-6 sm:p-8 rounded-xl border border-gray-200 shadow-sm">
+<div class="space-y-6">
+<h2 class="text-center text-xl font-bold text-gray-900">ログイン</h2>
+<div class="flex flex-col gap-3">
+<button class="flex w-full items-center justify-center gap-3 rounded-lg bg-gray-100 px-4 h-12 text-sm font-bold text-gray-800 hover:bg-gray-200 transition-colors">
+<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.578 12.285c0-.85-.075-1.68-.22-2.482H12.01v4.68h5.92c-.26 1.503-1.025 2.78-2.316 3.65v3.027h3.877c2.27-2.09,3.585-5.18,3.585-8.875Z" fill="#4285F4"></path><path d="M12.01 23c3.24 0 5.953-1.07 7.936-2.9l-3.877-3.027c-1.08.72-2.45.11-3.64.11-2.79 0-5.16-1.88-6.006-4.39H2.07v3.12C4.028 19.94,7.74 23,12.01 23Z" fill="#34A853"></path><path d="M5.996 14.288a6.54 6.54 0 0 1 0-4.57V6.598H2.07c-1.15 2.27-1.15 5.08 0 7.35l3.926-3.12Z" fill="#FBBC05"></path><path d="M12.01 5.38c1.65 0 3.06.57 4.2 1.69l3.43-3.43C17.954 1.76,15.25 0,12.01 0 7.74 0 4.028 3.06 2.07 7.12l3.926 3.12c.85-2.5 3.22-4.39 6.014-4.39Z" fill="#EA4335"></path></svg>
+<span class="truncate">Googleで続ける</span>
+</button>
+<button class="flex w-full items-center justify-center gap-3 rounded-lg bg-gray-100 px-4 h-12 text-sm font-bold text-gray-800 hover:bg-gray-200 transition-colors">
+<svg class="h-5 w-5 text-gray-800" fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" fill-rule="evenodd"></path></svg>
+<span class="truncate">GitHubで続ける</span>
+</button>
+</div>
+</div>
+<div class="my-6 flex items-center">
+<hr class="w-full border-t border-gray-200"/>
+<span class="px-2 text-xs font-medium text-gray-500">OR</span>
+<hr class="w-full border-t border-gray-200"/>
+</div>
+<div class="space-y-4">
+<h2 class="text-center text-xl font-bold text-gray-900">ようこそ！</h2>
+<p class="text-sm text-center text-gray-600">利用を開始するためにユーザー名を設定してください。</p>
+<div>
+<label class="sr-only" for="username">ユーザー名</label>
+<div class="relative">
+<span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+<span class="material-symbols-outlined text-gray-400">person</span>
+</span>
+<input class="w-full rounded-lg border-gray-300 bg-gray-50 text-gray-900 focus:ring-primary focus:border-primary pl-10" id="username" name="username" placeholder="ユーザー名" type="text"/>
+</div>
+</div>
+<button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
+<span class="truncate">登録して始める</span>
+</button>
+</div>
+</div>
+</div>
+<footer class="mt-12 text-center">
+<p class="text-xs text-gray-500">
+<a class="hover:underline" href="#">利用規約</a> ・ <a class="hover:underline" href="#">プライバシーポリシー</a>
+</p>
+</footer>
+</main>
+</div>
+</div>
+
+</body></html>

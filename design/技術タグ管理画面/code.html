@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>技術タグ管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+  </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class", // The user requested a light theme, but I'll keep the dark mode classes for structure, just with light theme colors.
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#3B82F6", // A nice blue for primary actions and highlights
+              "background": "#F9FAFB", // A very light gray for the main background
+              "surface": "#FFFFFF", // White for cards and surfaces
+              "text-primary": "#111827", // Dark gray for main text
+              "text-secondary": "#6B7280", // Lighter gray for secondary/muted text
+              "border-color": "#E5E7EB", // A light gray for borders
+              "accent-add": "#10B981", // Green for add actions
+              "accent-delete": "#EF4444", // Red for delete actions
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+            boxShadow: {
+                'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+                'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+            }
+          },
+        },
+      }
+  </script>
+</head>
+<body class="bg-background font-display text-text-primary">
+<div class="flex min-h-screen">
+<aside class="w-64 flex-shrink-0 bg-surface border-r border-border-color">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3 p-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA3-9qEqqOvsZlHtZscTg5XqRy9RrYnik-74C2SPnbUyR6JvMzRjZlj3a5q-v5ECJhNYQuTjiv7iTr0jcCVPd7bg6Vg3_WtHFqFQ455LOvms5FEb1CXluakAWS_pqmtGl75AfpOTfM8J5xcK0-drpXddn3XlLqxH-_UsrpRuyc9vdh6xxYNb6lSBpxa4d_uBLmTSt-72ifsOA4q1cYSL-jPGEYTTYchfALNa_4lJ9grBhPWn1auU7lIhxW8GV07gE2j6R0bjCK1tzTD");'></div>
+<div class="flex flex-col">
+<h1 class="text-text-primary text-base font-bold leading-normal">Taro Yamada</h1>
+<p class="text-text-secondary text-sm font-normal leading-normal">Frontend Developer</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-text-secondary hover:bg-gray-100 hover:text-text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<p class="text-sm font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-text-secondary hover:bg-gray-100 hover:text-text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl">folder_special</span>
+<p class="text-sm font-medium leading-normal">Portfolio</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-text-secondary hover:bg-gray-100 hover:text-text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl">lightbulb</span>
+<p class="text-sm font-medium leading-normal">Projects</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">sell</span>
+<p class="text-sm font-bold leading-normal">Tags</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-text-secondary hover:bg-gray-100 hover:text-text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl">settings</span>
+<p class="text-sm font-medium leading-normal">Settings</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-2">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
+<span class="truncate">New Project</span>
+</button>
+<a class="flex items-center gap-3 px-3 py-2 text-text-secondary hover:bg-gray-100 hover:text-text-primary rounded-lg" href="#">
+<span class="material-symbols-outlined text-xl">logout</span>
+<p class="text-sm font-medium leading-normal">Logout</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 p-6 sm:p-8 lg:p-10">
+<div class="max-w-4xl mx-auto">
+<div class="mb-8">
+<h1 class="text-text-primary text-3xl font-bold leading-tight tracking-tight">技術タグ管理</h1>
+<p class="text-text-secondary text-base font-normal leading-normal mt-1">ポートフォリオで使用する技術タグを追加、編集、削除します。</p>
+</div>
+<div class="space-y-10">
+<section>
+<div class="bg-surface rounded-lg border border-border-color p-6 shadow-sm">
+<h2 class="text-text-primary text-lg font-semibold leading-tight">新しいタグを追加</h2>
+<div class="mt-4 flex flex-col sm:flex-row items-start gap-4">
+<div class="relative w-full flex-1">
+<label class="sr-only" for="tag-input">タグ名</label>
+<input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary border border-border-color bg-white h-12 placeholder:text-text-secondary px-4 text-base font-normal leading-normal" id="tag-input" placeholder="新しいタグ名を入力 (例: Python)" value=""/>
+<div class="absolute z-10 mt-1 w-full rounded-md bg-surface shadow-lg border border-border-color hidden">
+<ul class="max-h-60 overflow-auto rounded-md py-1 text-base">
+<li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-text-primary hover:bg-primary hover:text-white">
+<span class="block truncate">Python</span>
+</li>
+<li class="cursor-pointer select-none relative py-2 pl-3 pr-9 text-text-primary hover:bg-primary hover:text-white">
+<span class="block truncate">PyTorch</span>
+</li>
+</ul>
+</div>
+</div>
+<button class="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-md h-12 px-5 bg-primary text-white gap-2 text-sm font-bold leading-normal tracking-wide hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-xl">add</span>
+<span class="truncate">追加する</span>
+</button>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-text-primary text-lg font-semibold leading-tight mb-4">登録済みタグ一覧</h2>
+<div class="bg-surface rounded-lg border border-border-color shadow-sm overflow-hidden">
+<div class="p-4 border-b border-border-color">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-xl">search</span>
+<input class="form-input w-full max-w-sm rounded-md text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary border border-border-color bg-background placeholder:text-text-secondary pl-10 pr-4 py-2" placeholder="タグを検索..." type="text"/>
+</div>
+</div>
+<div class="divide-y divide-border-color">
+<div class="flex items-center justify-between p-4 hover:bg-gray-50/50">
+<span class="text-base font-medium text-text-primary">JavaScript</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-md text-text-secondary hover:bg-gray-200/60 hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-md text-text-secondary hover:bg-red-100 hover:text-accent-delete transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-gray-50/50">
+<span class="text-base font-medium text-text-primary">React</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-md text-text-secondary hover:bg-gray-200/60 hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-md text-text-secondary hover:bg-red-100 hover:text-accent-delete transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-gray-50/50">
+<span class="text-base font-medium text-text-primary">Node.js</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-md text-text-secondary hover:bg-gray-200/60 hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-md text-text-secondary hover:bg-red-100 hover:text-accent-delete transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-gray-50/50">
+<span class="text-base font-medium text-text-primary">Tailwind CSS</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-md text-text-secondary hover:bg-gray-200/60 hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-md text-text-secondary hover:bg-red-100 hover:text-accent-delete transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 hover:bg-gray-50/50">
+<span class="text-base font-medium text-text-primary">Figma</span>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-md text-text-secondary hover:bg-gray-200/60 hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">edit</span>
+</button>
+<button class="p-2 rounded-md text-text-secondary hover:bg-red-100 hover:text-accent-delete transition-colors">
+<span class="material-symbols-outlined text-xl">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
