@@ -1,0 +1,552 @@
+# TechFolio Demo Projects Data
+# TOON File Format
+
+[[project]]
+id = "proj-001"
+title = "ECサイトリニューアルプロジェクト"
+summary = "大手小売企業のECサイトをReactで全面リニューアル"
+period_start = "2024-01"
+period_end = "2024-06"
+is_current = false
+roles = ["要件定義", "基本設計", "開発", "テスト"]
+description = "老朽化したECサイトを最新技術スタックで刷新。パフォーマンス改善とUX向上を実現しました。"
+tags = ["React", "TypeScript", "Next.js", "Tailwind CSS"]
+
+[[project]]
+id = "proj-002"
+title = "社内業務管理システム開発"
+summary = "Vue.jsとNode.jsを使用した業務効率化システム"
+period_start = "2023-09"
+period_end = "2024-03"
+is_current = false
+roles = ["詳細設計", "開発", "運用"]
+description = "従業員200名規模の企業向け業務管理システム。勤怠管理、経費精算、プロジェクト管理機能を実装。"
+tags = ["Vue.js", "Node.js", "PostgreSQL", "Docker"]
+
+[[project]]
+id = "proj-003"
+title = "モバイルアプリ開発プロジェクト"
+summary = "Flutter を使用したクロスプラットフォームアプリ"
+period_start = "2024-04"
+period_end = "2024-09"
+is_current = false
+roles = ["基本設計", "詳細設計", "開発"]
+description = "iOS/Android対応の健康管理アプリ。Firebase連携でリアルタイムデータ同期を実現。"
+tags = ["Flutter", "Dart", "Firebase", "iOS", "Android"]
+
+[[project]]
+id = "proj-004"
+title = "データ分析基盤構築"
+summary = "PythonとAWSを活用したデータパイプライン構築"
+period_start = "2023-06"
+period_end = "2023-12"
+is_current = false
+roles = ["要件定義", "基本設計", "開発", "運用"]
+description = "ビッグデータ分析のためのETLパイプライン構築。S3、Lambda、Redshiftを活用。"
+tags = ["Python", "AWS", "Lambda", "S3", "Redshift"]
+
+[[project]]
+id = "proj-005"
+title = "デザインシステム構築"
+summary = "FigmaとStorybookによる統一デザインシステム"
+period_start = "2024-02"
+period_end = "2024-05"
+is_current = false
+roles = ["基本設計", "開発"]
+description = "複数プロダクトで利用可能なデザインシステムとコンポーネントライブラリを構築。"
+tags = ["Figma", "Storybook", "React", "TypeScript"]
+
+[[project]]
+id = "proj-006"
+title = "マイクロサービス移行プロジェクト"
+summary = "モノリスからマイクロサービスアーキテクチャへの移行"
+period_start = "2023-03"
+period_end = "2024-01"
+is_current = false
+roles = ["要件定義", "基本設計", "詳細設計", "開発", "テスト", "運用"]
+description = "レガシーシステムを段階的にマイクロサービス化。Kubernetes、Docker、gRPCを活用。"
+tags = ["Kubernetes", "Docker", "Go", "gRPC", "AWS"]
+
+[[project]]
+id = "proj-007"
+title = "AIチャットボット開発"
+summary = "OpenAI APIを活用したカスタマーサポートボット"
+period_start = "2024-07"
+period_end = null
+is_current = true
+roles = ["基本設計", "開発", "テスト"]
+description = "GPT-4を利用した自然言語処理ベースのカスタマーサポートシステム。現在進行中。"
+tags = ["Python", "OpenAI", "FastAPI", "React"]
+
+[[project]]
+id = "proj-008"
+title = "セキュリティ強化プロジェクト"
+summary = "Webアプリケーションのセキュリティ診断と改善"
+period_start = "2024-03"
+period_end = "2024-06"
+is_current = false
+roles = ["開発", "テスト"]
+description = "脆弱性診断の実施とセキュリティパッチ適用。OWASP Top 10対策を実施。"
+tags = ["Security", "OWASP", "Node.js", "Express"]
+
+[[project]]
+id = "proj-009"
+title = "リアルタイム分析ダッシュボード"
+summary = "WebSocketを使用したリアルタイムデータ可視化"
+period_start = "2023-11"
+period_end = "2024-02"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "IoTデバイスからのデータをリアルタイムで可視化するダッシュボード。"
+tags = ["React", "D3.js", "WebSocket", "Node.js"]
+
+[[project]]
+id = "proj-010"
+title = "CI/CD パイプライン構築"
+summary = "GitHub Actionsによる自動デプロイ環境整備"
+period_start = "2024-01"
+period_end = "2024-04"
+is_current = false
+roles = ["基本設計", "開発", "運用"]
+description = "テスト自動化とデプロイ自動化により開発効率を大幅に向上。"
+tags = ["GitHub Actions", "Docker", "AWS", "Terraform"]
+
+[[project]]
+id = "proj-011"
+title = "予約管理システム開発"
+summary = "美容サロン向け予約・顧客管理システム"
+period_start = "2023-04"
+period_end = "2023-10"
+is_current = false
+roles = ["要件定義", "基本設計", "開発"]
+description = "LINE連携による予約受付、顧客管理、売上分析機能を実装。"
+tags = ["React", "Node.js", "MySQL", "LINE API"]
+
+[[project]]
+id = "proj-012"
+title = "在庫管理システムリプレイス"
+summary = "レガシーシステムのモダナイゼーション"
+period_start = "2022-11"
+period_end = "2023-05"
+is_current = false
+roles = ["詳細設計", "開発", "テスト"]
+description = "古いVB.NETシステムをWeb化。バーコード読取機能も実装。"
+tags = ["Vue.js", "ASP.NET Core", "SQL Server"]
+
+[[project]]
+id = "proj-013"
+title = "不動産物件検索サイト構築"
+summary = "Next.jsによる高速物件検索システム"
+period_start = "2024-05"
+period_end = null
+is_current = true
+roles = ["基本設計", "開発"]
+description = "SSR/ISRを活用したSEO最適化。地図連携機能も実装中。"
+tags = ["Next.js", "TypeScript", "Prisma", "Google Maps API"]
+
+[[project]]
+id = "proj-014"
+title = "社内ナレッジベース構築"
+summary = "Notionライクな社内wiki システム"
+period_start = "2023-07"
+period_end = "2024-01"
+is_current = false
+roles = ["要件定義", "開発", "運用"]
+description = "Markdown対応のドキュメント管理システム。全文検索機能付き。"
+tags = ["React", "Elasticsearch", "Node.js", "PostgreSQL"]
+
+[[project]]
+id = "proj-015"
+title = "動画配信プラットフォーム開発"
+summary = "HLS形式による動画ストリーミングサービス"
+period_start = "2023-01"
+period_end = "2023-08"
+is_current = false
+roles = ["詳細設計", "開発", "テスト"]
+description = "AWS MediaConvertを活用した動画変換・配信システム。"
+tags = ["React", "AWS", "MediaConvert", "CloudFront"]
+
+[[project]]
+id = "proj-016"
+title = "勤怠管理システム開発"
+summary = "クラウド型勤怠管理SaaS"
+period_start = "2022-09"
+period_end = "2023-03"
+is_current = false
+roles = ["基本設計", "開発"]
+description = "打刻、休暇申請、シフト管理機能を実装。"
+tags = ["Vue.js", "Laravel", "MySQL"]
+
+[[project]]
+id = "proj-017"
+title = "IoTセンサーデータ収集基盤"
+summary = "工場設備監視システム"
+period_start = "2023-05"
+period_end = "2023-11"
+is_current = false
+roles = ["要件定義", "基本設計", "開発"]
+description = "MQTT通信によるセンサーデータ収集・可視化。"
+tags = ["Python", "MQTT", "InfluxDB", "Grafana"]
+
+[[project]]
+id = "proj-018"
+title = "チャットアプリ開発"
+summary = "WebRTC対応のビデオ通話機能付きチャット"
+period_start = "2024-02"
+period_end = "2024-08"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "リアルタイムメッセージング、画面共有機能を実装。"
+tags = ["React", "WebRTC", "Socket.io", "Node.js"]
+
+[[project]]
+id = "proj-019"
+title = "レコメンドエンジン開発"
+summary = "機械学習による商品推薦システム"
+period_start = "2023-02"
+period_end = "2023-09"
+is_current = false
+roles = ["開発", "テスト"]
+description = "協調フィルタリングによるパーソナライズド推薦。"
+tags = ["Python", "scikit-learn", "Pandas", "FastAPI"]
+
+[[project]]
+id = "proj-020"
+title = "請求書管理システム"
+summary = "電子帳簿保存法対応の請求書発行システム"
+period_start = "2024-03"
+period_end = "2024-09"
+is_current = false
+roles = ["基本設計", "開発", "運用"]
+description = "PDF生成、メール送信、入金管理機能を実装。"
+tags = ["React", "Node.js", "PostgreSQL", "PDF.js"]
+
+[[project]]
+id = "proj-021"
+title = "アンケート収集システム"
+summary = "リアルタイム集計機能付きアンケートツール"
+period_start = "2023-06"
+period_end = "2023-12"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "ドラッグ&ドロップでフォーム作成可能。"
+tags = ["Vue.js", "Firebase", "Chart.js"]
+
+[[project]]
+id = "proj-022"
+title = "ブログCMS開発"
+summary = "Headless CMS型のブログシステム"
+period_start = "2022-07"
+period_end = "2023-01"
+is_current = false
+roles = ["要件定義", "基本設計", "開発"]
+description = "GraphQL APIによるコンテンツ配信。"
+tags = ["Next.js", "GraphQL", "Strapi", "PostgreSQL"]
+
+[[project]]
+id = "proj-023"
+title = "CTFプラットフォーム構築"
+summary = "セキュリティコンテスト実施基盤"
+period_start = "2024-01"
+period_end = "2024-06"
+is_current = false
+roles = ["開発", "テスト"]
+description = "Docker Swarmによる問題環境の自動デプロイ。"
+tags = ["Python", "Docker", "Flask", "Redis"]
+
+[[project]]
+id = "proj-024"
+title = "位置情報SNS開発"
+summary = "チェックイン機能付きソーシャルアプリ"
+period_start = "2023-03"
+period_end = "2023-10"
+is_current = false
+roles = ["基本設計", "詳細設計", "開発"]
+description = "Geolocation APIを活用した近隣ユーザー検索。"
+tags = ["React Native", "Firebase", "Google Maps API"]
+
+[[project]]
+id = "proj-025"
+title = "オンライン試験システム"
+summary = "不正防止機能付きCBTシステム"
+period_start = "2023-08"
+period_end = "2024-02"
+is_current = false
+roles = ["要件定義", "開発", "テスト"]
+description = "タブ切替検知、顔認証機能を実装。"
+tags = ["React", "WebRTC", "Node.js", "MongoDB"]
+
+[[project]]
+id = "proj-026"
+title = "コード品質分析ツール"
+summary = "静的解析による品質レポート自動生成"
+period_start = "2024-04"
+period_end = null
+is_current = true
+roles = ["開発"]
+description = "SonarQubeと連携したCI/CDパイプライン統合。"
+tags = ["Python", "SonarQube", "GitHub Actions"]
+
+[[project]]
+id = "proj-027"
+title = "グループウェア開発"
+summary = "スケジュール・タスク管理統合システム"
+period_start = "2022-10"
+period_end = "2023-06"
+is_current = false
+roles = ["基本設計", "開発"]
+description = "カレンダー連携、通知機能を実装。"
+tags = ["Vue.js", "Laravel", "MySQL", "Redis"]
+
+[[project]]
+id = "proj-028"
+title = "画像認識AIシステム"
+summary = "TensorFlowによる物体検出システム"
+period_start = "2023-04"
+period_end = "2023-11"
+is_current = false
+roles = ["開発", "テスト"]
+description = "リアルタイム画像解析、アノテーション機能。"
+tags = ["Python", "TensorFlow", "OpenCV", "FastAPI"]
+
+[[project]]
+id = "proj-029"
+title = "多言語対応ECサイト"
+summary = "i18n対応の越境ECプラットフォーム"
+period_start = "2024-02"
+period_end = "2024-09"
+is_current = false
+roles = ["基本設計", "詳細設計", "開発"]
+description = "5カ国語対応、多通貨決済機能を実装。"
+tags = ["Next.js", "i18next", "Stripe", "PostgreSQL"]
+
+[[project]]
+id = "proj-030"
+title = "Slackボット開発"
+summary = "業務自動化支援チャットボット"
+period_start = "2023-09"
+period_end = "2024-01"
+is_current = false
+roles = ["開発"]
+description = "定型業務の自動化、外部API連携機能。"
+tags = ["Node.js", "Slack API", "AWS Lambda"]
+
+[[project]]
+id = "proj-031"
+title = "ポッドキャスト配信プラットフォーム"
+summary = "音声コンテンツ配信サービス"
+period_start = "2023-01"
+period_end = "2023-07"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "RSS配信、統計分析機能を実装。"
+tags = ["React", "Node.js", "AWS S3", "CloudFront"]
+
+[[project]]
+id = "proj-032"
+title = "メール配信システム"
+summary = "セグメント配信対応メールマーケティングツール"
+period_start = "2022-08"
+period_end = "2023-02"
+is_current = false
+roles = ["要件定義", "基本設計", "開発"]
+description = "A/Bテスト、開封率トラッキング機能。"
+tags = ["Vue.js", "SendGrid", "PostgreSQL", "Redis"]
+
+[[project]]
+id = "proj-033"
+title = "健康管理アプリ開発"
+summary = "ウェアラブルデバイス連携アプリ"
+period_start = "2024-06"
+period_end = null
+is_current = true
+roles = ["基本設計", "開発"]
+description = "Apple Health、Google Fit連携。進行中。"
+tags = ["React Native", "Firebase", "HealthKit"]
+
+[[project]]
+id = "proj-034"
+title = "契約書管理システム"
+summary = "電子署名対応の契約管理プラットフォーム"
+period_start = "2023-10"
+period_end = "2024-04"
+is_current = false
+roles = ["開発", "テスト"]
+description = "DocuSign連携、期限アラート機能。"
+tags = ["React", "Node.js", "DocuSign API", "MongoDB"]
+
+[[project]]
+id = "proj-035"
+title = "家計簿アプリ開発"
+summary = "レシート読取機能付き家計簿アプリ"
+period_start = "2023-05"
+period_end = "2023-12"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "OCR技術による自動入力、カテゴリ別分析。"
+tags = ["Flutter", "Firebase", "Vision API"]
+
+[[project]]
+id = "proj-036"
+title = "タスク管理ツール開発"
+summary = "カンバン方式のプロジェクト管理ツール"
+period_start = "2022-12"
+period_end = "2023-06"
+is_current = false
+roles = ["基本設計", "開発"]
+description = "ドラッグ&ドロップUI、ガントチャート表示。"
+tags = ["React", "DnD Kit", "PostgreSQL", "WebSocket"]
+
+[[project]]
+id = "proj-037"
+title = "求人マッチングサービス"
+summary = "AIによる求人・求職者マッチングシステム"
+period_start = "2023-07"
+period_end = "2024-03"
+is_current = false
+roles = ["要件定義", "開発"]
+description = "自然言語処理によるスキルマッチング。"
+tags = ["Python", "spaCy", "React", "PostgreSQL"]
+
+[[project]]
+id = "proj-038"
+title = "オンラインホワイトボード"
+summary = "リアルタイム共同編集ツール"
+period_start = "2024-01"
+period_end = "2024-07"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "WebSocketによる同時編集、図形描画機能。"
+tags = ["React", "Canvas API", "Socket.io", "Redis"]
+
+[[project]]
+id = "proj-039"
+title = "クラウドストレージ開発"
+summary = "ファイル共有・同期サービス"
+period_start = "2023-02"
+period_end = "2023-09"
+is_current = false
+roles = ["基本設計", "開発", "テスト"]
+description = "差分同期、バージョン管理機能を実装。"
+tags = ["Go", "MinIO", "React", "WebSocket"]
+
+[[project]]
+id = "proj-040"
+title = "SNS分析ダッシュボード"
+summary = "Twitter/Instagram分析ツール"
+period_start = "2024-03"
+period_end = "2024-08"
+is_current = false
+roles = ["開発"]
+description = "エンゲージメント分析、レポート自動生成。"
+tags = ["Python", "Twitter API", "Chart.js", "FastAPI"]
+
+[[project]]
+id = "proj-041"
+title = "フードデリバリーアプリ"
+summary = "配達員マッチング機能付きデリバリーサービス"
+period_start = "2022-11"
+period_end = "2023-07"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "リアルタイム位置追跡、決済機能実装。"
+tags = ["React Native", "Google Maps API", "Stripe", "Firebase"]
+
+[[project]]
+id = "proj-042"
+title = "バグ追跡システム"
+summary = "イシュー管理・バグトラッキングツール"
+period_start = "2023-06"
+period_end = "2023-12"
+is_current = false
+roles = ["基本設計", "開発"]
+description = "GitHub連携、自動通知機能を実装。"
+tags = ["Vue.js", "Node.js", "GitHub API", "PostgreSQL"]
+
+[[project]]
+id = "proj-043"
+title = "eラーニングプラットフォーム"
+summary = "動画学習・進捗管理システム"
+period_start = "2024-04"
+period_end = null
+is_current = true
+roles = ["要件定義", "基本設計", "開発"]
+description = "コース管理、修了証発行機能。進行中。"
+tags = ["Next.js", "Prisma", "AWS", "Vimeo API"]
+
+[[project]]
+id = "proj-044"
+title = "名刺管理アプリ"
+summary = "OCR名刺読取・CRM連携システム"
+period_start = "2023-03"
+period_end = "2023-09"
+is_current = false
+roles = ["開発", "テスト"]
+description = "画像解析による自動データ化、タグ管理。"
+tags = ["React", "Vision API", "Node.js", "MongoDB"]
+
+[[project]]
+id = "proj-045"
+title = "イベント管理システム"
+summary = "申込受付・チケット発行プラットフォーム"
+period_start = "2022-09"
+period_end = "2023-04"
+is_current = false
+roles = ["基本設計", "詳細設計", "開発"]
+description = "QRコードチケット、参加者管理機能。"
+tags = ["Vue.js", "Laravel", "MySQL", "Stripe"]
+
+[[project]]
+id = "proj-046"
+title = "ソースコードレビューツール"
+summary = "プルリクエスト自動レビューシステム"
+period_start = "2024-05"
+period_end = null
+is_current = true
+roles = ["開発"]
+description = "LLMによるコード品質チェック。進行中。"
+tags = ["Python", "OpenAI", "GitHub API", "FastAPI"]
+
+[[project]]
+id = "proj-047"
+title = "施設予約システム"
+summary = "会議室・設備予約管理システム"
+period_start = "2023-08"
+period_end = "2024-02"
+is_current = false
+roles = ["詳細設計", "開発"]
+description = "カレンダー連携、空き状況確認機能。"
+tags = ["React", "Node.js", "Google Calendar API", "PostgreSQL"]
+
+[[project]]
+id = "proj-048"
+title = "パスワード管理ツール"
+summary = "暗号化対応の認証情報管理サービス"
+period_start = "2023-11"
+period_end = "2024-05"
+is_current = false
+roles = ["要件定義", "基本設計", "開発", "テスト"]
+description = "AES-256暗号化、ブラウザ拡張機能開発。"
+tags = ["React", "Electron", "WebCrypto", "IndexedDB"]
+
+[[project]]
+id = "proj-049"
+title = "農業IoTシステム"
+summary = "温度・湿度センサーデータ管理"
+period_start = "2023-04"
+period_end = "2023-10"
+is_current = false
+roles = ["開発"]
+description = "センサーデータ収集、異常検知アラート。"
+tags = ["Python", "Raspberry Pi", "InfluxDB", "Grafana"]
+
+[[project]]
+id = "proj-050"
+title = "翻訳管理システム"
+summary = "多言語コンテンツ翻訳ワークフロー管理"
+period_start = "2024-02"
+period_end = "2024-09"
+is_current = false
+roles = ["基本設計", "開発"]
+description = "機械翻訳API連携、翻訳メモリ機能。"
+tags = ["Vue.js", "DeepL API", "PostgreSQL", "Redis"]

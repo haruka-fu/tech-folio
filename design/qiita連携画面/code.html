@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Qiita Integration - Portfolio Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2b6cee",
+              "background": "#f8f9fa",
+              "qiita-green": "#55C500",
+              "danger-red": "#DC3545",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+      }
+    </style>
+</head>
+<body class="bg-background font-display text-gray-800">
+<div class="relative flex min-h-screen w-full">
+<aside class="flex flex-col w-64 bg-white border-r border-gray-200">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3 p-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar of Taro Yamada" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCqDMYzPPR0xGO3gFiw3AvMea-Yz6iXA2MTnq7t7xjmG8nMJwfy9FQkX4j8M5G5KslnCOxatb97QCbPtLuJydf-h4Bd86LqR7uY8BjMqm4Z2NFCeAMZvzTGXqjjdrHzNUGWCaVFcXuDkC3lj0z9w6J-clz7Pfwl5tYiT8cI1eHx6gyk6RO2A597_W-2cPmOrLFbr4B8veNQRmXowYfHnTTK-8klWsYtU6ftUoPLBMZxyqBnDfP8g1UBjJJLJfNMydQ4pEcQU889HicU");'></div>
+<div class="flex flex-col">
+<h1 class="text-gray-900 text-base font-medium leading-normal">Taro Yamada</h1>
+<p class="text-gray-500 text-sm font-normal leading-normal">Software Engineer</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" href="#">
+<span class="material-symbols-outlined">work</span>
+<p class="text-sm font-medium leading-normal">Portfolio</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined">link</span>
+<p class="text-sm font-medium leading-normal">Integrations</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium leading-normal">Settings</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<p class="text-sm font-medium leading-normal">Help</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-medium leading-normal">Logout</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 p-6 lg:p-10">
+<div class="mx-auto max-w-4xl">
+<div class="pb-4">
+<h1 class="text-gray-900 text-3xl font-bold leading-tight tracking-tight">Qiita連携</h1>
+<p class="text-gray-600 text-base font-normal leading-normal mt-2">Qiitaアカウントを連携すると、投稿した記事を自動でポートフォリオに追加できます。</p>
+</div>
+<div class="flex flex-col gap-10 mt-6">
+<section class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+<h2 class="text-gray-900 text-lg font-semibold leading-tight pb-4 border-b border-gray-200">連携ステータス</h2>
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 py-6 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-qiita-green flex items-center justify-center rounded-full bg-qiita-green/10 shrink-0 size-12">
+<span class="material-symbols-outlined text-3xl">check_circle</span>
+</div>
+<div>
+<p class="text-gray-900 text-base font-medium leading-normal">連携済み</p>
+<p class="text-gray-500 text-sm">Qiita ID: @yamada-taro</p>
+</div>
+</div>
+<div class="shrink-0 w-full sm:w-auto">
+<button class="flex w-full sm:w-auto min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-red-50 text-danger-red text-sm font-medium leading-normal hover:bg-red-100 transition-colors border border-red-200">
+<span class="truncate">連携を解除する</span>
+</button>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-gray-900 text-lg font-semibold leading-tight mb-4">連携済みの記事一覧</h2>
+<div class="overflow-x-auto bg-white rounded-lg border border-gray-200 shadow-sm">
+<table class="w-full text-sm text-left text-gray-500">
+<thead class="text-xs text-gray-700 uppercase bg-gray-50">
+<tr>
+<th class="px-6 py-3 font-medium" scope="col">タイトル</th>
+<th class="px-6 py-3 font-medium" scope="col">投稿日</th>
+<th class="px-6 py-3 font-medium text-center" scope="col">LGTM数</th>
+<th class="px-6 py-3 font-medium text-center" scope="col">アクション</th>
+</tr>
+</thead>
+<tbody>
+<tr class="bg-white border-b border-gray-200">
+<th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" scope="row">
+<a class="hover:text-qiita-green hover:underline" href="#">Tailwind CSSで作るモダンなUIデザイン</a>
+</th>
+<td class="px-6 py-4">2023-10-26</td>
+<td class="px-6 py-4 text-center">128</td>
+<td class="px-6 py-4 text-center">
+<button class="text-primary hover:underline font-medium">ポートフォリオに追加</button>
+</td>
+</tr>
+<tr class="bg-white border-b border-gray-200">
+<th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" scope="row">
+<a class="hover:text-qiita-green hover:underline" href="#">Reactのパフォーマンス最適化Tips</a>
+</th>
+<td class="px-6 py-4">2023-09-15</td>
+<td class="px-6 py-4 text-center">256</td>
+<td class="px-6 py-4 text-center">
+<button class="text-primary hover:underline font-medium">ポートフォリオに追加</button>
+</td>
+</tr>
+<tr class="bg-white border-b border-gray-200">
+<th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" scope="row">
+<a class="hover:text-qiita-green hover:underline" href="#">REST API設計のベストプラクティス</a>
+</th>
+<td class="px-6 py-4">2023-08-01</td>
+<td class="px-6 py-4 text-center">512</td>
+<td class="px-6 py-4 text-center">
+<span class="text-gray-500">追加済み</span>
+</td>
+</tr>
+<tr class="bg-white">
+<th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" scope="row">
+<a class="hover:text-qiita-green hover:underline" href="#">Next.js 13 App Router入門</a>
+</th>
+<td class="px-6 py-4">2023-07-20</td>
+<td class="px-6 py-4 text-center">98</td>
+<td class="px-6 py-4 text-center">
+<button class="text-primary hover:underline font-medium">ポートフォリオに追加</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<nav aria-label="Table navigation" class="flex items-center justify-between pt-4">
+<span class="text-sm font-normal text-gray-500">Showing <span class="font-semibold text-gray-900">1-4</span> of <span class="font-semibold text-gray-900">10</span></span>
+<ul class="inline-flex items-center -space-x-px text-sm">
+<li><a class="flex items-center justify-center px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700" href="#">Previous</a></li>
+<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700" href="#">1</a></li>
+<li><a class="flex items-center justify-center px-3 h-8 text-primary border border-primary bg-primary/10 hover:bg-primary/20" href="#">2</a></li>
+<li><a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700" href="#">Next</a></li>
+</ul>
+</nav>
+</section>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
