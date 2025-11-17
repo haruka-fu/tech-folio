@@ -176,8 +176,8 @@ export default function ProfileSettingsPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-                    <div className="grow">
+                  <div className="flex flex-col gap-6">
+                    <div>
                       <label
                         className="text-gray-800 text-base font-medium leading-normal pb-2 block"
                         htmlFor="job-title"
@@ -191,30 +191,7 @@ export default function ProfileSettingsPage() {
                         defaultValue="Web Developer"
                       />
                     </div>
-                    <div className="flex flex-col gap-2 pt-2 md:pt-8">
-                      <p className="text-gray-500 text-sm font-medium">
-                        公開設定
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-600">
-                          非公開
-                        </span>
-                        <label className="relative inline-flex cursor-pointer items-center">
-                          <input
-                            checked
-                            type="checkbox"
-                            className="peer sr-only"
-                          />
-                          <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-[#4A90E2] peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
-                        </label>
-                        <span className="text-sm font-medium text-gray-600">
-                          公開
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-                    <div className="grow">
+                    <div>
                       <label
                         className="text-gray-800 text-base font-medium leading-normal pb-2 block"
                         htmlFor="bio"
@@ -228,57 +205,15 @@ export default function ProfileSettingsPage() {
                         defaultValue="フロントエンド開発を中心に、ユーザーにとって使いやすいUI/UXを追求しています。趣味はキャンプと写真です。"
                       />
                     </div>
-                    <div className="flex flex-col gap-2 pt-2 md:pt-8">
-                      <p className="text-gray-500 text-sm font-medium">
-                        公開設定
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-600">
-                          非公開
-                        </span>
-                        <label className="relative inline-flex cursor-pointer items-center">
-                          <input
-                            checked
-                            type="checkbox"
-                            className="peer sr-only"
-                          />
-                          <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-[#4A90E2] peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
-                        </label>
-                        <span className="text-sm font-medium text-gray-600">
-                          公開
-                        </span>
-                      </div>
-                    </div>
                   </div>
                 </form>
               </section>
 
               <section className="rounded-xl border border-gray-200 bg-white p-6">
-                <div className="flex items-start justify-between mb-6">
+                <div className="mb-6">
                   <h2 className="text-xl font-bold text-gray-900">
                     SNS・外部リンク
                   </h2>
-                  <div className="flex flex-col gap-2 items-end">
-                    <p className="text-gray-500 text-sm font-medium">
-                      公開設定
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-600">
-                        非公開
-                      </span>
-                      <label className="relative inline-flex cursor-pointer items-center">
-                        <input
-                          checked
-                          type="checkbox"
-                          className="peer sr-only"
-                        />
-                        <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:start-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all peer-checked:bg-[#4A90E2] peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
-                      </label>
-                      <span className="text-sm font-medium text-gray-600">
-                        公開
-                      </span>
-                    </div>
-                  </div>
                 </div>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center gap-3">

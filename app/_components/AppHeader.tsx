@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import NewProjectModal from "./NewProjectModal";
 
 export default function AppHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -30,37 +33,53 @@ export default function AppHeader() {
             </div>
             <div className="hidden items-center gap-4 text-sm text-[#6b7280] md:flex">
               <Link href="/profile" className="hover:text-[#111827]">
-                プロフィール
+                スキル一覧
               </Link>
               <Link href="/" className="hover:text-[#111827]">
                 プロジェクト一覧
               </Link>
-              <Link href="/profile/settings" className="hover:text-[#111827]">
-                設定
-              </Link>
             </div>
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex"
-              >
-                新規プロジェクト追加
-              </button>
-              <Link
-                href="/profile/settings"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e7eb] bg-white text-[#6b7280] shadow-sm transition-colors hover:text-[#1f2937]"
-              >
-                <span className="material-symbols-outlined">settings</span>
-              </Link>
-              <Link href="/profile">
-                <div
-                  className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat ring-2 ring-transparent transition-all hover:ring-[#2b6cee]"
+              {pathname === "/" && (
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex"
+                >
+                  新規プロジェクト追加
+                </button>
+              )}
+              <div className="relative">
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee]"
                   style={{
                     backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuA6PWaaBW8av2RMEZAe1O8YRJ_R5D9bVtlpA6q_cj4OTGpZItFOKLbUj1OAJpPFdCakF56t2Tf3jViZLgi7Bjk0NMIuEOMbAKhCZiOURefbX1PriQA7Fm3ynSDT2Pe0PseWUeRg3kAijGb",)',
+                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjRibWRXMrRAeffJBSYqrUvPBepXfAcL__fSwR60eoWjPbC_NmicCUhm3uPqMJE9BbGwOJGw8n7VtbYx39CQzEvxR7jIfHap8zbdjh8Agulk9W2--ldTL5eOSDfU_A-cS-cJGaFbUlq1b4ytoozp1FHVgMGzaINwn9A8FKE3uZ8MT1cXlLoMdl_uSifcZc67EIz1XElq3gX0RIT34IKOBY9TjWAAI38Xg_Q8HhBaA8FXEeXKD0--FW0uFm6Ld9h_iIcBIlzvgvFUwV",)',
                   }}
                 />
-              </Link>
+                {isMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setIsMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-lg">
+                      <div className="py-1">
+                        <Link
+                          href="/profile/settings"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                        >
+                          <span className="material-symbols-outlined text-xl">
+                            settings
+                          </span>
+                          設定
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

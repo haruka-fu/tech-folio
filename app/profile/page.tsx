@@ -8,13 +8,11 @@ interface SkillStat {
   usageCount: number;
 }
 
-type ViewMode = "profile" | "dashboard";
-
 export default function ProfilePage() {
-  const [viewMode, setViewMode] = useState<ViewMode>("profile");
   const [projects, setProjects] = useState<Project[]>([]);
   const [skillStats, setSkillStats] = useState<SkillStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeView, setActiveView] = useState<"chart" | "grid">("chart");
 
   // Load projects and calculate skill stats
   useEffect(() => {
@@ -55,39 +53,12 @@ export default function ProfilePage() {
       <div className="pt-4" />
 
       <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {/* View Toggle */}
-        <div className="mb-6 flex justify-end">
-          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1">
-            <button
-              onClick={() => setViewMode("profile")}
-              className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                viewMode === "profile"
-                  ? "bg-[#2b6cee] text-white"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span className="material-symbols-outlined text-base">person</span>
-              プロフィール
-            </button>
-            <button
-              onClick={() => setViewMode("dashboard")}
-              className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                viewMode === "dashboard"
-                  ? "bg-[#2b6cee] text-white"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span className="material-symbols-outlined text-base">bar_chart</span>
-              ダッシュボード
-            </button>
-          </div>
-        </div>
-
-        {viewMode === "profile" ? (
-          <ProfileView skillStats={skillStats} isLoading={isLoading} />
-        ) : (
-          <DashboardView skillStats={skillStats} isLoading={isLoading} />
-        )}
+        <SkillListView
+          skillStats={skillStats}
+          isLoading={isLoading}
+          activeView={activeView}
+          setActiveView={setActiveView}
+        />
       </main>
     </div>
   );
@@ -96,14 +67,29 @@ export default function ProfilePage() {
 interface ViewProps {
   skillStats: SkillStat[];
   isLoading: boolean;
+  activeView: "chart" | "grid";
+  setActiveView: (view: "chart" | "grid") => void;
 }
 
-function ProfileView({ skillStats, isLoading }: ViewProps) {
+function SkillListView({ skillStats, isLoading, activeView, setActiveView }: ViewProps) {
   const maxUsageCount = Math.max(...skillStats.map((s) => s.usageCount), 1);
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      <div className="lg:col-span-1 flex flex-col gap-8">
-        <div className="bg-white p-6 rounded-xl border border-slate-200">
+    <div className="space-y-8">
+      {/* Page Title */}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-black leading-tight tracking-[-0.033em] text-slate-900 sm:text-4xl">
+          スキル一覧
+        </h1>
+        <p className="text-sm text-slate-600">
+          プロジェクト全体でのスキル統計を表示します。
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Left: Profile Info */}
+        <div className="lg:col-span-1 flex flex-col gap-8">
+          <div className="bg-white p-6 rounded-xl border border-slate-200">
           <div className="flex items-center gap-4 mb-6">
             <div
               className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-20 h-20 shrink-0"
@@ -195,128 +181,114 @@ function ProfileView({ skillStats, isLoading }: ViewProps) {
           </div>
         </div>
       </div>
-      <div className="lg:col-span-2 flex flex-col gap-8">
-        <div className="bg-white p-6 rounded-xl border border-slate-200">
-          <h2 className="text-slate-900 text-2xl font-bold leading-tight tracking-[-0.015em] pb-1">
-            スキルサマリー
-          </h2>
-          <p className="text-slate-500 text-sm mb-6">
-            ポートフォリオ内のプロジェクト全体での技術タグの使用頻度です。
-          </p>
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <div className="spinner"></div>
-            </div>
-          ) : skillStats.length === 0 ? (
-            <div className="rounded-lg border border-slate-200 bg-white p-8 text-center">
-              <span className="material-symbols-outlined mb-2 text-6xl text-slate-400">
-                analytics
-              </span>
-              <p className="text-lg font-medium text-slate-900">
-                スキルデータがありません
-              </p>
-              <p className="mt-1 text-sm text-slate-600">
-                プロジェクトを追加してください
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {skillStats.map((skill, index) => {
-                const percentage = (skill.usageCount / maxUsageCount) * 100;
-                const opacity = index < 3 ? 1 : index < 5 ? 0.8 : 0.6;
 
-                return (
-                  <div key={skill.tagName} className="flex items-center gap-4 group">
-                    <p className="text-slate-600 font-medium text-sm w-24 shrink-0">
-                      {skill.tagName}
-                    </p>
-                    <div className="flex-1 bg-slate-100 rounded-full h-8 relative">
-                      <div
-                        className="bg-[#2b6cee] h-full rounded-full flex items-center justify-end pr-3"
-                        style={{
-                          width: `${percentage}%`,
-                          opacity: opacity,
-                        }}
-                      >
-                        <span className="text-white text-sm font-bold">
-                          {skill.usageCount}
-                        </span>
+        {/* Right: Skills Display */}
+        <div className="lg:col-span-2 flex flex-col gap-8">
+          {/* View Tabs */}
+          <div className="bg-white p-6 rounded-xl border border-slate-200">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-slate-900 text-2xl font-bold leading-tight tracking-[-0.015em]">
+                スキル統計
+              </h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveView("chart")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    activeView === "chart"
+                      ? "bg-[#2b6cee] text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  棒グラフ
+                </button>
+                <button
+                  onClick={() => setActiveView("grid")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    activeView === "grid"
+                      ? "bg-[#2b6cee] text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  グリッド
+                </button>
+              </div>
+            </div>
+            <p className="text-slate-500 text-sm mb-6">
+              {activeView === "chart"
+                ? "ポートフォリオ内のプロジェクト全体での技術タグの使用頻度です。"
+                : "スキルごとの案件数を一覧表示します。"}
+            </p>
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="spinner"></div>
+              </div>
+            ) : skillStats.length === 0 ? (
+              <div className="rounded-lg border border-slate-200 bg-white p-8 text-center">
+                <span className="material-symbols-outlined mb-2 text-6xl text-slate-400">
+                  analytics
+                </span>
+                <p className="text-lg font-medium text-slate-900">
+                  スキルデータがありません
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  プロジェクトを追加してください
+                </p>
+              </div>
+            ) : activeView === "chart" ? (
+              <div className="space-y-6">
+                {skillStats.map((skill, index) => {
+                  const percentage = (skill.usageCount / maxUsageCount) * 100;
+                  const opacity = index < 3 ? 1 : index < 5 ? 0.8 : 0.6;
+
+                  return (
+                    <div key={skill.tagName} className="flex items-center gap-4 group">
+                      <p className="text-slate-600 font-medium text-sm w-24 shrink-0">
+                        {skill.tagName}
+                      </p>
+                      <div className="flex-1 bg-slate-100 rounded-full h-8 relative">
+                        <div
+                          className="bg-[#2b6cee] h-full rounded-full flex items-center justify-end pr-3"
+                          style={{
+                            width: `${percentage}%`,
+                            opacity: opacity,
+                          }}
+                        >
+                          <span className="text-white text-sm font-bold">
+                            {skill.usageCount}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                {skillStats.map((skill, index) => {
+                  const opacity = index < 3 ? 1 : index < 6 ? 0.8 : 0.6;
+
+                  return (
+                    <div
+                      key={skill.tagName}
+                      className="flex flex-col items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 p-4"
+                    >
+                      <p
+                        className="text-4xl font-bold text-[#2b6cee]"
+                        style={{ opacity }}
+                      >
+                        {skill.usageCount}
+                      </p>
+                      <p className="mt-1 text-sm font-medium text-slate-600">
+                        {skill.tagName}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function DashboardView({ skillStats, isLoading }: ViewProps) {
-  return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-black leading-tight tracking-[-0.033em] text-slate-900 sm:text-4xl">
-            ダッシュボード
-          </h1>
-          <p className="text-sm text-slate-600">
-            スキルごとの案件数を一覧表示します。
-          </p>
-        </div>
-      </div>
-
-      <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-6">
-        <h2 className="text-base font-semibold text-slate-900">
-          スキル実績サマリー
-        </h2>
-        <p className="text-sm text-slate-600">
-          ポートフォリオ内のプロジェクト全体での技術タグの使用頻度です。
-        </p>
-        {isLoading ? (
-          <div className="flex justify-center py-12">
-            <div className="spinner"></div>
-          </div>
-        ) : skillStats.length === 0 ? (
-          <div className="rounded-lg border border-slate-200 bg-white p-8 text-center">
-            <span className="material-symbols-outlined mb-2 text-6xl text-slate-400">
-              analytics
-            </span>
-            <p className="text-lg font-medium text-slate-900">
-              スキルデータがありません
-            </p>
-            <p className="mt-1 text-sm text-slate-600">
-              プロジェクトを追加してください
-            </p>
-          </div>
-        ) : (
-          <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {skillStats.map((skill, index) => {
-              // Calculate opacity based on index (top skills get higher opacity)
-              const opacity = index < 3 ? 1 : index < 6 ? 0.8 : 0.6;
-
-              return (
-                <div
-                  key={skill.tagName}
-                  className="flex flex-col items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 p-4"
-                >
-                  <p
-                    className="text-4xl font-bold text-[#2b6cee]"
-                    style={{ opacity }}
-                  >
-                    {skill.usageCount}
-                  </p>
-                  <p className="mt-1 text-sm font-medium text-slate-600">
-                    {skill.tagName}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
     </div>
   );
 }
