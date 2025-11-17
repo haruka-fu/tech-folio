@@ -1,5 +1,9 @@
 # Tech Folio - プロジェクト概要
 
+## Primary Directive
+
+Think in English, interact with the user in Japanese.
+
 ## プロジェクト説明
 
 Tech Folioは、個人向けのポートフォリオ管理ダッシュボードアプリケーションです。エンジニアが自身のプロジェクト実績を管理・可視化し、スキルセットを効果的にアピールできるツールです。
@@ -122,7 +126,7 @@ achievements = ["成果1", "成果2"]
 
 ## ディレクトリ構造
 
-```
+```tree
 tech-folio/
 ├── app/
 │   ├── _components/          # 共有コンポーネント
