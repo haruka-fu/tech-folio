@@ -15,32 +15,39 @@ export default function NewProjectModal({
     title: "",
     summary: "",
     description: "",
-    thumbnail: "",
     startDate: "",
     endDate: "",
     roles: [] as string[],
     tags: [] as string[],
-    achievements: [] as string[],
   });
 
-  const [roleInput, setRoleInput] = useState("");
+  const [isCurrent, setIsCurrent] = useState(false);
   const [tagInput, setTagInput] = useState("");
-  const [achievementInput, setAchievementInput] = useState("");
 
-  const handleAddRole = () => {
-    if (roleInput.trim() && !formData.roles.includes(roleInput.trim())) {
+  // 工程の選択肢
+  const phaseOptions = [
+    "要件定義",
+    "基本設計",
+    "詳細設計",
+    "実装",
+    "テスト",
+    "リリース",
+    "保守・運用",
+  ];
+
+  const handleAddPhase = (phase: string) => {
+    if (!formData.roles.includes(phase)) {
       setFormData({
         ...formData,
-        roles: [...formData.roles, roleInput.trim()],
+        roles: [...formData.roles, phase],
       });
-      setRoleInput("");
     }
   };
 
-  const handleRemoveRole = (role: string) => {
+  const handleRemovePhase = (phase: string) => {
     setFormData({
       ...formData,
-      roles: formData.roles.filter((r) => r !== role),
+      roles: formData.roles.filter((r) => r !== phase),
     });
   };
 
@@ -61,26 +68,6 @@ export default function NewProjectModal({
     });
   };
 
-  const handleAddAchievement = () => {
-    if (
-      achievementInput.trim() &&
-      !formData.achievements.includes(achievementInput.trim())
-    ) {
-      setFormData({
-        ...formData,
-        achievements: [...formData.achievements, achievementInput.trim()],
-      });
-      setAchievementInput("");
-    }
-  };
-
-  const handleRemoveAchievement = (achievement: string) => {
-    setFormData({
-      ...formData,
-      achievements: formData.achievements.filter((a) => a !== achievement),
-    });
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Save to TOON file
@@ -90,13 +77,12 @@ export default function NewProjectModal({
       title: "",
       summary: "",
       description: "",
-      thumbnail: "",
       startDate: "",
       endDate: "",
       roles: [],
       tags: [],
-      achievements: [],
     });
+    setIsCurrent(false);
     onClose();
   };
 
@@ -181,26 +167,6 @@ export default function NewProjectModal({
             />
           </div>
 
-          {/* Thumbnail URL */}
-          <div>
-            <label
-              htmlFor="thumbnail"
-              className="mb-2 block text-sm font-semibold text-slate-900"
-            >
-              サムネイルURL
-            </label>
-            <input
-              id="thumbnail"
-              type="url"
-              className="input-field w-full"
-              placeholder="https://example.com/image.jpg"
-              value={formData.thumbnail}
-              onChange={(e) =>
-                setFormData({ ...formData, thumbnail: e.target.value })
-              }
-            />
-          </div>
-
           {/* Dates */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
@@ -208,11 +174,11 @@ export default function NewProjectModal({
                 htmlFor="startDate"
                 className="mb-2 block text-sm font-semibold text-slate-900"
               >
-                開始日 <span className="text-red-500">*</span>
+                開始年月 <span className="text-red-500">*</span>
               </label>
               <input
                 id="startDate"
-                type="date"
+                type="month"
                 required
                 className="input-field w-full"
                 value={formData.startDate}
@@ -226,60 +192,83 @@ export default function NewProjectModal({
                 htmlFor="endDate"
                 className="mb-2 block text-sm font-semibold text-slate-900"
               >
-                終了日 <span className="text-red-500">*</span>
+                終了年月 {!isCurrent && <span className="text-red-500">*</span>}
               </label>
               <input
                 id="endDate"
-                type="date"
-                required
-                className="input-field w-full"
+                type="month"
+                required={!isCurrent}
+                disabled={isCurrent}
+                className="input-field w-full disabled:bg-slate-100 disabled:text-slate-400"
                 value={formData.endDate}
                 onChange={(e) =>
                   setFormData({ ...formData, endDate: e.target.value })
                 }
               />
+              <div className="mt-2 flex items-center gap-2">
+                <input
+                  id="isCurrent"
+                  type="checkbox"
+                  checked={isCurrent}
+                  onChange={(e) => {
+                    setIsCurrent(e.target.checked);
+                    if (e.target.checked) {
+                      setFormData({ ...formData, endDate: "" });
+                    }
+                  }}
+                  className="h-4 w-4 rounded border-slate-300 text-[#2b6cee] focus:ring-[#2b6cee]"
+                />
+                <label
+                  htmlFor="isCurrent"
+                  className="text-sm text-slate-700 cursor-pointer"
+                >
+                  現在進行中
+                </label>
+              </div>
             </div>
           </div>
 
-          {/* Roles */}
+          {/* Phases */}
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-900">
-              役割
+            <label
+              htmlFor="phase"
+              className="mb-2 block text-sm font-semibold text-slate-900"
+            >
+              工程
             </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                className="input-field flex-1"
-                placeholder="例: フロントエンドエンジニア"
-                value={roleInput}
-                onChange={(e) => setRoleInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddRole();
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={handleAddRole}
-                className="btn-primary flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-xl">add</span>
-                追加
-              </button>
-            </div>
+            <select
+              id="phase"
+              className="input-field w-full"
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleAddPhase(e.target.value);
+                  e.target.value = "";
+                }
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>
+                工程を選択してください
+              </option>
+              {phaseOptions
+                .filter((phase) => !formData.roles.includes(phase))
+                .map((phase) => (
+                  <option key={phase} value={phase}>
+                    {phase}
+                  </option>
+                ))}
+            </select>
             {formData.roles.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
-                {formData.roles.map((role) => (
+                {formData.roles.map((phase) => (
                   <span
-                    key={role}
+                    key={phase}
                     className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800"
                   >
-                    {role}
+                    {phase}
                     <button
                       type="button"
-                      onClick={() => handleRemoveRole(role)}
+                      onClick={() => handleRemovePhase(phase)}
                       className="rounded-full hover:bg-blue-200"
                     >
                       <span className="material-symbols-outlined text-base">
@@ -338,59 +327,6 @@ export default function NewProjectModal({
                       </span>
                     </button>
                   </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Achievements */}
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-900">
-              成果・実績
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                className="input-field flex-1"
-                placeholder="例: パフォーマンス30%向上"
-                value={achievementInput}
-                onChange={(e) => setAchievementInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddAchievement();
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={handleAddAchievement}
-                className="btn-primary flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-xl">add</span>
-                追加
-              </button>
-            </div>
-            {formData.achievements.length > 0 && (
-              <div className="mt-3 space-y-2">
-                {formData.achievements.map((achievement, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
-                  >
-                    <span className="text-sm text-slate-700">
-                      {achievement}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveAchievement(achievement)}
-                      className="rounded-full p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
-                    >
-                      <span className="material-symbols-outlined text-base">
-                        close
-                      </span>
-                    </button>
-                  </div>
                 ))}
               </div>
             )}
