@@ -1,33 +1,123 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Project, parseToonFile, getTagColor } from "@/lib/toon-parser";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import type { ProjectWithDetails, Role } from "@/lib/supabase";
+
+const supabase = createClient();
 
 const ITEMS_PER_PAGE = 20;
 
 export default function ProjectsPage() {
-  const [allProjects, setAllProjects] = useState<Project[]>([]);
-  const [displayedProjects, setDisplayedProjects] = useState<Project[]>([]);
+  const [allProjects, setAllProjects] = useState<ProjectWithDetails[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [userProfileId, setUserProfileId] = useState<string | null>(null);
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  // Load projects from TOON file
+  // Load projects from Supabase
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const response = await fetch("/data/projects.toon");
-        const content = await response.text();
-        const parsedProjects = parseToonFile(content);
-        setAllProjects(parsedProjects);
+        // 認証状態を確認
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          // ログインしていない場合はログインページにリダイレクト
+          window.location.href = '/login';
+          return;
+        }
+
+        // プロフィール情報を取得
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error('Profile error:', profileError);
+          throw profileError;
+        }
+
+        // プロフィールが存在しない場合は登録画面へ
+        if (!profile) {
+          window.location.href = '/register';
+          return;
+        }
+
+        setUserProfileId(profile.id);
+
+        // ログインユーザーのプロジェクトデータを取得
+        const { data: projects, error: projectsError } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('profile_id', profile.id)
+          .order('period_start', { ascending: false });
+
+        if (projectsError) throw projectsError;
+
+        // タグデータを取得
+        const { data: tags, error: tagsError } = await supabase
+          .from('tags')
+          .select('*');
+
+        if (tagsError) throw tagsError;
+
+        // ロールデータを取得
+        const { data: roles, error: rolesError } = await supabase
+          .from('roles')
+          .select('*')
+          .order('display_order', { ascending: true });
+
+        if (rolesError) throw rolesError;
+
+        // プロジェクトとタグの関連を取得
+        const { data: projectTags, error: projectTagsError } = await supabase
+          .from('project_tags')
+          .select('*');
+
+        if (projectTagsError) throw projectTagsError;
+
+        // プロジェクトにタグとロール名を追加
+        const projectsWithDetails: ProjectWithDetails[] = (projects || []).map(project => {
+          // プロジェクトに関連するタグIDを取得
+          const relatedTagIds = (projectTags || [])
+            .filter(pt => pt.project_id === project.id)
+            .map(pt => pt.tag_id);
+
+          // タグオブジェクトを取得
+          const projectTagObjects = (tags || [])
+            .filter(tag => relatedTagIds.includes(tag.id));
+
+          // ロール名を取得
+          const roleNames = (project.roles || [])
+            .map((roleId: number) => {
+              const role = (roles || []).find((r: Role) => r.id === roleId);
+              return role?.name || '';
+            })
+            .filter((name: string) => name !== '');
+
+          return {
+            ...project,
+            tags: projectTagObjects,
+            role_names: roleNames,
+          };
+        });
+
+        setAllProjects(projectsWithDetails);
       } catch (error) {
         console.error("Failed to load projects:", error);
+        // エラーの詳細をログに出力
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+          console.error("Error stack:", error.stack);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -37,41 +127,35 @@ export default function ProjectsPage() {
   }, []);
 
   // Filter projects
-  const filteredProjects = allProjects.filter((project) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.summary.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredProjects = useMemo(() => {
+    return allProjects.filter((project) => {
+      const matchesSearch =
+        searchQuery === "" ||
+        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.summary.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesTag = !selectedTag || project.tags.includes(selectedTag);
-    const matchesRole = !selectedRole || project.roles.includes(selectedRole);
+      const matchesTag = !selectedTag || project.tags.some(tag => tag.name === selectedTag);
+      const matchesRole = !selectedRole || project.role_names.includes(selectedRole);
 
-    return matchesSearch && matchesTag && matchesRole;
-  });
+      return matchesSearch && matchesTag && matchesRole;
+    });
+  }, [allProjects, searchQuery, selectedTag, selectedRole]);
 
-  // Load more projects when reaching bottom
-  const loadMore = useCallback(() => {
-    const startIndex = 0;
+  // Calculate displayed projects based on current page
+  const displayedProjects = useMemo(() => {
     const endIndex = page * ITEMS_PER_PAGE;
-    const newProjects = filteredProjects.slice(startIndex, endIndex);
+    return filteredProjects.slice(0, endIndex);
+  }, [filteredProjects, page]);
 
-    setDisplayedProjects(newProjects);
-    setHasMore(endIndex < filteredProjects.length);
-  }, [page, filteredProjects]);
+  // Calculate if there are more items to load
+  const hasMore = useMemo(() => {
+    return page * ITEMS_PER_PAGE < filteredProjects.length;
+  }, [page, filteredProjects.length]);
 
   // Reset pagination when filters change
   useEffect(() => {
     setPage(1);
-    setDisplayedProjects(filteredProjects.slice(0, ITEMS_PER_PAGE));
-    setHasMore(ITEMS_PER_PAGE < filteredProjects.length);
-  }, [searchQuery, selectedTag, selectedRole, filteredProjects]);
-
-  // Load more projects when page changes
-  useEffect(() => {
-    if (page > 1) {
-      loadMore();
-    }
-  }, [page, loadMore]);
+  }, [searchQuery, selectedTag, selectedRole]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -95,16 +179,6 @@ export default function ProjectsPage() {
       }
     };
   }, [hasMore, isLoading]);
-
-  // Get all unique tags from projects
-  const allTags = Array.from(
-    new Set(allProjects.flatMap((project) => project.tags))
-  ).sort();
-
-  // Get all unique roles from projects
-  const allRoles = Array.from(
-    new Set(allProjects.flatMap((project) => project.roles))
-  ).sort();
 
   // Format period display
   const formatPeriod = (start: string, end: string | null, isCurrent: boolean) => {
@@ -276,23 +350,24 @@ export default function ProjectsPage() {
 
                     {/* Tags */}
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {project.tags.map((tag) => {
-                        const colors = getTagColor(tag);
-                        return (
-                          <span
-                            key={tag}
-                            className={`tag ${colors.bg} ${colors.text}`}
-                          >
-                            {tag}
-                          </span>
-                        );
-                      })}
+                      {project.tags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium"
+                          style={{
+                            backgroundColor: tag.color ? `${tag.color}20` : '#f3f4f6',
+                            color: tag.color || '#374151'
+                          }}
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
                     </div>
 
                     {/* Roles */}
-                    {project.roles.length > 0 && (
+                    {project.role_names.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-2">
-                        {project.roles.map((role) => (
+                        {project.role_names.map((role) => (
                           <span
                             key={role}
                             className="inline-flex items-center rounded-md border border-[#e5e7eb] bg-white px-2 py-1 text-xs font-medium text-[#6b7280]"
