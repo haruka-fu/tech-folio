@@ -1,15 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Project, parseToonFile } from "@/lib/toon-parser";
+import { createClient } from "@/lib/supabase/client";
+import type { Tag } from "@/lib/supabase";
+
+const supabase = createClient();
 
 interface SkillStat {
   tagName: string;
   usageCount: number;
+  tag: Tag;
 }
 
 export default function ProfilePage() {
-  const [projects, setProjects] = useState<Project[]>([]);
   const [skillStats, setSkillStats] = useState<SkillStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeView, setActiveView] = useState<"chart" | "grid">("chart");
@@ -18,28 +21,90 @@ export default function ProfilePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch("/data/projects.toon");
-        const content = await response.text();
-        const parsedProjects = parseToonFile(content);
-        setProjects(parsedProjects);
+        // 認証状態を確認
+        const { data: { user } } = await supabase.auth.getUser();
 
-        // Calculate skill statistics
+        if (!user) {
+          // ログインしていない場合はログインページにリダイレクト
+          window.location.href = '/login';
+          return;
+        }
+
+        // プロフィール情報を取得
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error('Profile error:', profileError);
+          throw profileError;
+        }
+
+        // プロフィールが存在しない場合は登録画面へ
+        if (!profile) {
+          window.location.href = '/register';
+          return;
+        }
+
+        // ユーザーのプロジェクトを取得
+        const { data: projects, error: projectsError } = await supabase
+          .from('projects')
+          .select('id')
+          .eq('profile_id', profile.id);
+
+        if (projectsError) throw projectsError;
+
+        if (!projects || projects.length === 0) {
+          setSkillStats([]);
+          setIsLoading(false);
+          return;
+        }
+
+        const projectIds = projects.map(p => p.id);
+
+        // プロジェクトに紐づくタグを取得
+        const { data: projectTags, error: projectTagsError } = await supabase
+          .from('project_tags')
+          .select('tag_id')
+          .in('project_id', projectIds);
+
+        if (projectTagsError) throw projectTagsError;
+
+        // タグの使用回数を集計
         const tagCounts = new Map<string, number>();
-        parsedProjects.forEach((project) => {
-          project.tags.forEach((tag) => {
-            tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-          });
+        projectTags?.forEach(pt => {
+          const count = tagCounts.get(pt.tag_id) || 0;
+          tagCounts.set(pt.tag_id, count + 1);
         });
 
-        // Convert to array and sort by usage count
-        const stats = Array.from(tagCounts.entries())
-          .map(([tagName, usageCount]) => ({ tagName, usageCount }))
+        // タグ情報を取得
+        const { data: tags, error: tagsError } = await supabase
+          .from('tags')
+          .select('*')
+          .in('id', Array.from(tagCounts.keys()));
+
+        if (tagsError) throw tagsError;
+
+        // タグに使用回数を追加してトップ10を取得
+        const stats: SkillStat[] = (tags || [])
+          .map(tag => ({
+            tagName: tag.name,
+            usageCount: tagCounts.get(tag.id) || 0,
+            tag: tag,
+          }))
           .sort((a, b) => b.usageCount - a.usageCount)
-          .slice(0, 10); // Top 10 skills
+          .slice(0, 10);
 
         setSkillStats(stats);
       } catch (error) {
-        console.error("Failed to load projects:", error);
+        console.error("Failed to load skills:", error);
+        // エラーの詳細をログに出力
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+          console.error("Error stack:", error.stack);
+        }
       } finally {
         setIsLoading(false);
       }

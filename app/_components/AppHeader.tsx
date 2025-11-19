@@ -1,14 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import NewProjectModal from "./NewProjectModal";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 export default function AppHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <>
@@ -32,23 +45,21 @@ export default function AppHeader() {
               </Link>
             </div>
             <div className="hidden items-center gap-4 text-sm text-[#6b7280] md:flex">
-              <Link href="/profile" className="hover:text-[#111827]">
-                スキル一覧
-              </Link>
               <Link href="/" className="hover:text-[#111827]">
                 プロジェクト一覧
               </Link>
+              <Link href="/profile" className="hover:text-[#111827]">
+                スキル一覧
+              </Link>
             </div>
-            <div className="flex items-center gap-3">
-              {pathname === "/" && (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex"
-                >
-                  新規プロジェクト追加
-                </button>
-              )}
-              <div className="relative">
+            <div className="flex items-center gap-3 w-[284px] justify-end">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex"
+              >
+                新規プロジェクト追加
+              </button>
+              <div className="relative shrink-0">
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee]"
@@ -75,6 +86,18 @@ export default function AppHeader() {
                           </span>
                           設定
                         </Link>
+                        <button
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            handleLogout();
+                          }}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                        >
+                          <span className="material-symbols-outlined text-xl">
+                            logout
+                          </span>
+                          ログアウト
+                        </button>
                       </div>
                     </div>
                   </>
