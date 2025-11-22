@@ -1,18 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import NewProjectModal from "./NewProjectModal";
 import { createClient } from "@/lib/supabase/client";
+import type { Profile } from "@/lib/supabase";
 
 const supabase = createClient();
 
 export default function AppHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const pathname = usePathname();
   const router = useRouter();
+
+  // プロフィール情報を取得
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) return;
+
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (profileData) {
+          setProfile(profileData);
+        }
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -60,14 +87,24 @@ export default function AppHeader() {
                 新規プロジェクト追加
               </button>
               <div className="relative shrink-0">
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee]"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAjRibWRXMrRAeffJBSYqrUvPBepXfAcL__fSwR60eoWjPbC_NmicCUhm3uPqMJE9BbGwOJGw8n7VtbYx39CQzEvxR7jIfHap8zbdjh8Agulk9W2--ldTL5eOSDfU_A-cS-cJGaFbUlq1b4ytoozp1FHVgMGzaINwn9A8FKE3uZ8MT1cXlLoMdl_uSifcZc67EIz1XElq3gX0RIT34IKOBY9TjWAAI38Xg_Q8HhBaA8FXEeXKD0--FW0uFm6Ld9h_iIcBIlzvgvFUwV",)',
-                  }}
-                />
+                {profile?.avatar_url ? (
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee]"
+                    style={{
+                      backgroundImage: `url("${profile.avatar_url}")`,
+                    }}
+                  />
+                ) : (
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="size-10 aspect-square cursor-pointer rounded-full bg-slate-200 border-2 border-slate-300 transition-all hover:border-[#2b6cee] flex items-center justify-center"
+                  >
+                    <span className="material-symbols-outlined text-slate-500">
+                      person
+                    </span>
+                  </button>
+                )}
                 {isMenuOpen && (
                   <>
                     <div
