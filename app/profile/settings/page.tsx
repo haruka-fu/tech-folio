@@ -4,11 +4,22 @@ import { useState } from "react";
 import Link from "next/link";
 import TagManagement from "./_components/TagManagement";
 import QiitaIntegration from "./_components/QiitaIntegration";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 type SettingsTab = "profile" | "tags" | "qiita";
 
 export default function ProfileSettingsPage() {
+  const { profile, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+
+  // ローディング中の表示
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FA]">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#F7F8FA]">
@@ -111,14 +122,21 @@ export default function ProfileSettingsPage() {
                 <div className="flex w-full flex-col gap-4 md:flex-row md:items-center justify-between border-b pb-6">
                   <div className="flex items-center gap-5">
                     <div className="relative">
-                      <div
-                        className="w-24 h-24 rounded-full bg-cover bg-center bg-no-repeat"
-                        data-alt="Current user avatar"
-                        style={{
-                          backgroundImage:
-                            'url("https://lh3.googleusercontent.com/aida-public/AB6AXuALBBk5aiS4OHraQtT063jnzpCgcohWFAUYwHN9REUW5KR1CPjrm_aJCPHR7LqcR2bz5gFtHof2TO-yRvanIliJYuhtCQWTQgrlmuSOLI1DA6DvHmuZqucUq4eT8xQIcnY5kUll0AtqMvUksxI6-MsSHg8YX-VmNWkJ7y-KhYc2U6iTLNOEoWZoz2kJgPp_Cy7o8qhgOpS90OTGa9rPEn9nBKfOkZqqFDIxhiik9cSxUYb5qpKtoIwd9PAUjRShjWEjZfVU_D9mpTEM")',
-                        }}
-                      />
+                      {profile?.avatar_url ? (
+                        <div
+                          className="w-24 h-24 rounded-full bg-cover bg-center bg-no-repeat"
+                          data-alt="Current user avatar"
+                          style={{
+                            backgroundImage: `url("${profile.avatar_url}")`,
+                          }}
+                        />
+                      ) : (
+                        <div className="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-4xl text-slate-500">
+                            person
+                          </span>
+                        </div>
+                      )}
                       <button className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90 transition-colors">
                         <span className="material-symbols-outlined text-base">
                           edit
