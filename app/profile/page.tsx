@@ -12,9 +12,15 @@ interface SkillStat {
   tag: Tag;
 }
 
+interface RoleStat {
+  roleName: string;
+  count: number;
+}
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [skillStats, setSkillStats] = useState<SkillStat[]>([]);
+  const [roleStats, setRoleStats] = useState<RoleStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeView, setActiveView] = useState<"chart" | "grid">("chart");
 
@@ -51,21 +57,49 @@ export default function ProfilePage() {
 
         setProfile(profileData);
 
-        // ユーザーのプロジェクトを取得
+        // ユーザーのプロジェクトを取得（rolesも含める）
         const { data: projects, error: projectsError } = await supabase
           .from('projects')
-          .select('id')
+          .select('id, roles')
           .eq('profile_id', profileData.id);
 
         if (projectsError) throw projectsError;
 
         if (!projects || projects.length === 0) {
           setSkillStats([]);
+          setRoleStats([]);
           setIsLoading(false);
           return;
         }
 
         const projectIds = projects.map(p => p.id);
+
+        // ロールの使用回数を集計
+        const roleCounts = new Map<number, number>();
+        projects.forEach(project => {
+          (project.roles || []).forEach((roleId: number) => {
+            const count = roleCounts.get(roleId) || 0;
+            roleCounts.set(roleId, count + 1);
+          });
+        });
+
+        // ロール情報を取得
+        const { data: roles, error: rolesError } = await supabase
+          .from('roles')
+          .select('*')
+          .order('display_order', { ascending: true });
+
+        if (rolesError) throw rolesError;
+
+        // ロール統計を作成
+        const roleStatsData: RoleStat[] = (roles || [])
+          .map(role => ({
+            roleName: role.name,
+            count: roleCounts.get(role.id) || 0,
+          }))
+          .filter(stat => stat.count > 0);
+
+        setRoleStats(roleStatsData);
 
         // プロジェクトに紐づくタグを取得
         const { data: projectTags, error: projectTagsError } = await supabase
@@ -123,6 +157,7 @@ export default function ProfilePage() {
         <SkillListView
           profile={profile}
           skillStats={skillStats}
+          roleStats={roleStats}
           isLoading={isLoading}
           activeView={activeView}
           setActiveView={setActiveView}
@@ -135,12 +170,13 @@ export default function ProfilePage() {
 interface ViewProps {
   profile: Profile | null;
   skillStats: SkillStat[];
+  roleStats: RoleStat[];
   isLoading: boolean;
   activeView: "chart" | "grid";
   setActiveView: (view: "chart" | "grid") => void;
 }
 
-function SkillListView({ profile, skillStats, isLoading, activeView, setActiveView }: ViewProps) {
+function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, setActiveView }: ViewProps) {
   const maxUsageCount = Math.max(...skillStats.map((s) => s.usageCount), 1);
 
   return (
@@ -296,6 +332,30 @@ function SkillListView({ profile, skillStats, isLoading, activeView, setActiveVi
               <p className="text-center text-slate-500">プロフィール情報が見つかりません</p>
             )}
           </div>
+
+          {/* 担当工程 */}
+          {!isLoading && roleStats.length > 0 && (
+            <div className="bg-white p-6 rounded-xl border border-slate-200">
+              <h3 className="text-slate-900 text-lg font-bold leading-tight mb-4">
+                担当工程
+              </h3>
+              <div className="space-y-3">
+                {roleStats.map((stat) => (
+                  <div
+                    key={stat.roleName}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-slate-600 text-sm">
+                      {stat.roleName}
+                    </span>
+                    <span className="text-slate-900 text-sm font-semibold bg-slate-100 px-2.5 py-0.5 rounded-full">
+                      {stat.count}件
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 右側: スキル表示 */}
