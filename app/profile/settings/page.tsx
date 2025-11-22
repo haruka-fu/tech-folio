@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import TagManagement from "./_components/TagManagement";
 import QiitaIntegration from "./_components/QiitaIntegration";
 import { useAuth } from "@/lib/hooks/useAuth";
 
-type SettingsTab = "profile" | "tags" | "qiita";
+type SettingsTab = "profile" | "qiita";
 
 export default function ProfileSettingsPage() {
   const { profile, isLoading } = useAuth();
@@ -54,26 +53,6 @@ export default function ProfileSettingsPage() {
                   person
                 </span>
                 <p>プロフィール設定</p>
-              </button>
-              <button
-                onClick={() => setActiveTab("tags")}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal transition-colors text-left ${
-                  activeTab === "tags"
-                    ? "bg-[#2b6cee]/10 text-[#2b6cee]"
-                    : "text-gray-500 hover:bg-gray-100"
-                }`}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={
-                    activeTab === "tags"
-                      ? { fontVariationSettings: "'FILL' 1" }
-                      : {}
-                  }
-                >
-                  sell
-                </span>
-                <p>技術タグ管理</p>
               </button>
               <button
                 onClick={() => setActiveTab("qiita")}
@@ -272,8 +251,6 @@ export default function ProfileSettingsPage() {
               </div>
               </>
             )}
-
-            {activeTab === "tags" && <TagManagement />}
 
             {activeTab === "qiita" && <QiitaIntegration />}
           </div>
