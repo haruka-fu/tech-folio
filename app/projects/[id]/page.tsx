@@ -2,26 +2,75 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Project, parseToonFile, getTagColor } from "@/lib/toon-parser";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import type { ProjectWithDetails, Role } from "@/lib/supabase";
+import { useAuth } from "@/lib/hooks/useAuth";
+
+const supabase = createClient();
 
 export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [project, setProject] = useState<Project | null>(null);
+  const { isLoading: isAuthLoading } = useAuth();
+  const [project, setProject] = useState<ProjectWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // 認証チェック中はデータを読み込まない
+    if (isAuthLoading) return;
+
     const loadProject = async () => {
       try {
-        const response = await fetch("/data/projects.toon");
-        const content = await response.text();
-        const projects = parseToonFile(content);
-        const foundProject = projects.find((p) => p.id === params.id);
+        // プロジェクトデータを取得
+        const { data: projectData, error: projectError } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('id', params.id)
+          .single();
 
-        if (foundProject) {
-          setProject(foundProject);
-        }
+        if (projectError) throw projectError;
+
+        // タグデータを取得
+        const { data: tags, error: tagsError } = await supabase
+          .from('tags')
+          .select('*');
+
+        if (tagsError) throw tagsError;
+
+        // ロールデータを取得
+        const { data: roles, error: rolesError } = await supabase
+          .from('roles')
+          .select('*')
+          .order('display_order', { ascending: true });
+
+        if (rolesError) throw rolesError;
+
+        // プロジェクトとタグの関連を取得
+        const { data: projectTags, error: projectTagsError } = await supabase
+          .from('project_tags')
+          .select('*')
+          .eq('project_id', params.id);
+
+        if (projectTagsError) throw projectTagsError;
+
+        // プロジェクトに関連するタグを取得
+        const relatedTagIds = (projectTags || []).map(pt => pt.tag_id);
+        const projectTagObjects = (tags || []).filter(tag => relatedTagIds.includes(tag.id));
+
+        // ロール名を取得
+        const roleNames = (projectData.roles || [])
+          .map((roleId: number) => {
+            const role = (roles || []).find((r: Role) => r.id === roleId);
+            return role?.name || '';
+          })
+          .filter((name: string) => name !== '');
+
+        setProject({
+          ...projectData,
+          tags: projectTagObjects,
+          role_names: roleNames,
+        });
       } catch (error) {
         console.error("Failed to load project:", error);
       } finally {
@@ -30,7 +79,7 @@ export default function ProjectDetailPage() {
     };
 
     loadProject();
-  }, [params.id]);
+  }, [params.id, isAuthLoading]);
 
   const formatPeriod = (
     start: string,
@@ -152,25 +201,29 @@ export default function ProjectDetailPage() {
                 使用技術
               </p>
               <div className="flex flex-wrap gap-2">
-                {project.tags.map((tag) => {
-                  const colors = getTagColor(tag);
-                  return (
-                    <span key={tag} className={`tag ${colors.bg} ${colors.text}`}>
-                      {tag}
-                    </span>
-                  );
-                })}
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium"
+                    style={{
+                      backgroundColor: tag.color ? `${tag.color}20` : '#f3f4f6',
+                      color: tag.color || '#374151'
+                    }}
+                  >
+                    {tag.name}
+                  </span>
+                ))}
               </div>
             </div>
 
             {/* Roles */}
-            {project.roles.length > 0 && (
+            {project.role_names.length > 0 && (
               <div>
                 <p className="mb-2 text-sm font-medium text-[#1f2937]">
                   担当工程
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {project.roles.map((role) => (
+                  {project.role_names.map((role) => (
                     <span
                       key={role}
                       className="inline-flex items-center rounded-md border border-[#e5e7eb] bg-white px-3 py-1.5 text-sm font-medium text-[#6b7280]"
