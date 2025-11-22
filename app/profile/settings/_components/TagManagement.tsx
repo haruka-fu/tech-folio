@@ -1,27 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { parseToonFile } from "@/lib/toon-parser";
+import { createClient } from "@/lib/supabase/client";
+import type { Tag } from "@/lib/supabase";
+
+const supabase = createClient();
 
 export default function TagManagement() {
-  const [allTags, setAllTags] = useState<string[]>([]);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadTags = async () => {
       try {
-        const response = await fetch("/data/projects.toon");
-        const content = await response.text();
-        const projects = parseToonFile(content);
+        // Supabaseからタグを取得
+        const { data: tags, error } = await supabase
+          .from('tags')
+          .select('*')
+          .order('name', { ascending: true });
 
-        // Extract unique tags from all projects
-        const tagSet = new Set<string>();
-        projects.forEach((project) => {
-          project.tags.forEach((tag) => tagSet.add(tag));
-        });
+        if (error) throw error;
 
-        setAllTags(Array.from(tagSet).sort());
+        setAllTags(tags || []);
       } catch (error) {
         console.error("Failed to load tags:", error);
       } finally {
@@ -33,7 +34,7 @@ export default function TagManagement() {
   }, []);
 
   const filteredTags = allTags.filter((tag) =>
-    tag.toLowerCase().includes(searchQuery.toLowerCase())
+    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -114,11 +115,11 @@ export default function TagManagement() {
               <div className="divide-y divide-[#E5E7EB]">
                 {filteredTags.map((tag) => (
                   <div
-                    key={tag}
+                    key={tag.id}
                     className="flex items-center justify-between p-4 hover:bg-gray-50/50"
                   >
                     <span className="text-base font-medium text-[#111827]">
-                      {tag}
+                      {tag.name}
                     </span>
                     <div className="flex items-center gap-2">
                       <button className="rounded-md p-2 text-[#6B7280] transition-colors hover:bg-gray-200/60 hover:text-[#111827]">
