@@ -35,6 +35,8 @@ export type Profile = {
   qiita_url: string | null;
   /** その他のURL */
   other_url: string | null;
+  /** Qiita APIアクセストークン */
+  qiita_access_token: string | null;
   /** 作成日時 */
   created_at: string;
   /** 更新日時 */
