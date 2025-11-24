@@ -7,11 +7,14 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=1
+      - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
     volumes:
       - .:/app
       - node_modules:/app/node_modules
+    stdin_open: true
+    tty: true
 
 volumes:
   node_modules:

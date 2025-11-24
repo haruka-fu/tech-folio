@@ -2,13 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import TagManagement from "./_components/TagManagement";
 import QiitaIntegration from "./_components/QiitaIntegration";
+import { useAuth } from "@/lib/hooks/useAuth";
 
-type SettingsTab = "profile" | "tags" | "qiita";
+type SettingsTab = "profile" | "qiita";
 
 export default function ProfileSettingsPage() {
+  const { profile, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+
+  // ローディング中の表示
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FA]">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#F7F8FA]">
@@ -43,26 +53,6 @@ export default function ProfileSettingsPage() {
                   person
                 </span>
                 <p>プロフィール設定</p>
-              </button>
-              <button
-                onClick={() => setActiveTab("tags")}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium leading-normal transition-colors text-left ${
-                  activeTab === "tags"
-                    ? "bg-[#2b6cee]/10 text-[#2b6cee]"
-                    : "text-gray-500 hover:bg-gray-100"
-                }`}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={
-                    activeTab === "tags"
-                      ? { fontVariationSettings: "'FILL' 1" }
-                      : {}
-                  }
-                >
-                  sell
-                </span>
-                <p>技術タグ管理</p>
               </button>
               <button
                 onClick={() => setActiveTab("qiita")}
@@ -111,14 +101,21 @@ export default function ProfileSettingsPage() {
                 <div className="flex w-full flex-col gap-4 md:flex-row md:items-center justify-between border-b pb-6">
                   <div className="flex items-center gap-5">
                     <div className="relative">
-                      <div
-                        className="w-24 h-24 rounded-full bg-cover bg-center bg-no-repeat"
-                        data-alt="Current user avatar"
-                        style={{
-                          backgroundImage:
-                            'url("https://lh3.googleusercontent.com/aida-public/AB6AXuALBBk5aiS4OHraQtT063jnzpCgcohWFAUYwHN9REUW5KR1CPjrm_aJCPHR7LqcR2bz5gFtHof2TO-yRvanIliJYuhtCQWTQgrlmuSOLI1DA6DvHmuZqucUq4eT8xQIcnY5kUll0AtqMvUksxI6-MsSHg8YX-VmNWkJ7y-KhYc2U6iTLNOEoWZoz2kJgPp_Cy7o8qhgOpS90OTGa9rPEn9nBKfOkZqqFDIxhiik9cSxUYb5qpKtoIwd9PAUjRShjWEjZfVU_D9mpTEM")',
-                        }}
-                      />
+                      {profile?.avatar_url ? (
+                        <div
+                          className="w-24 h-24 rounded-full bg-cover bg-center bg-no-repeat"
+                          data-alt="Current user avatar"
+                          style={{
+                            backgroundImage: `url("${profile.avatar_url}")`,
+                          }}
+                        />
+                      ) : (
+                        <div className="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-4xl text-slate-500">
+                            person
+                          </span>
+                        </div>
+                      )}
                       <button className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90 transition-colors">
                         <span className="material-symbols-outlined text-base">
                           edit
@@ -148,49 +145,12 @@ export default function ProfileSettingsPage() {
                         className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
                         id="display-name"
                         type="text"
-                        defaultValue="Taro Yamada"
+                        defaultValue={profile?.display_name || ""}
+                        placeholder="表示名を入力"
                       />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
-                    <div className="grow">
-                      <label
-                        className="text-gray-800 text-base font-medium leading-normal pb-2 block"
-                        htmlFor="username"
-                      >
-                        ユーザー名
-                      </label>
-                      <div className="relative">
-                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                          <span className="text-gray-500">@</span>
-                        </div>
-                        <input
-                          className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 pl-7 text-base font-normal leading-normal"
-                          id="username"
-                          type="text"
-                          defaultValue="taro-yamada"
-                        />
-                      </div>
-                      <p className="mt-2 text-sm text-gray-500">
-                        4〜20文字の英数字で入力してください。ユーザー名は月に1回のみ変更可能です。
-                      </p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-6">
-                    <div>
-                      <label
-                        className="text-gray-800 text-base font-medium leading-normal pb-2 block"
-                        htmlFor="job-title"
-                      >
-                        職種
-                      </label>
-                      <input
-                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
-                        id="job-title"
-                        type="text"
-                        defaultValue="Web Developer"
-                      />
-                    </div>
                     <div>
                       <label
                         className="text-gray-800 text-base font-medium leading-normal pb-2 block"
@@ -202,7 +162,8 @@ export default function ProfileSettingsPage() {
                         className="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] placeholder:text-gray-400 p-4 text-base font-normal leading-normal"
                         id="bio"
                         rows={4}
-                        defaultValue="フロントエンド開発を中心に、ユーザーにとって使いやすいUI/UXを追求しています。趣味はキャンプと写真です。"
+                        defaultValue={profile?.bio || ""}
+                        placeholder="自己紹介を入力"
                       />
                     </div>
                   </div>
@@ -228,9 +189,9 @@ export default function ProfileSettingsPage() {
                     </div>
                     <input
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
-                      placeholder="Username"
-                      type="text"
-                      defaultValue="taro_dev"
+                      placeholder="https://x.com/username"
+                      type="url"
+                      defaultValue={profile?.twitter_url || ""}
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -245,25 +206,35 @@ export default function ProfileSettingsPage() {
                     </div>
                     <input
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
-                      placeholder="Username"
-                      type="text"
-                      defaultValue="yamada-taro"
+                      placeholder="https://github.com/username"
+                      type="url"
+                      defaultValue={profile?.github_url || ""}
                     />
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-lg bg-gray-100">
-                      <svg
-                        className="h-6 w-6 text-gray-600"
-                        fill="currentColor"
-                        viewBox="0 0 256 256"
-                      >
-                        <path d="M211.49,37.36a8,8,0,0,0-10.74,2.2L128,143.43,55.25,39.56a8,8,0,0,0-13-1.71L19.5,69.56a8,8,0,0,0,1.71,13l89.17,89.17a8,8,0,0,0,11.32,0L211.86,82.56a8,8,0,0,0,1.71-13l-22.75-31.7A8,8,0,0,0,211.49,37.36ZM128,158.34,51.31,81.65l16-22.29L128,126.57l60.69-67.21,16,22.29Z"></path>
-                      </svg>
+                      <span className="material-symbols-outlined text-gray-600">
+                        article
+                      </span>
                     </div>
                     <input
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
-                      placeholder="Username"
-                      type="text"
+                      placeholder="https://qiita.com/username"
+                      type="url"
+                      defaultValue={profile?.qiita_url || ""}
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-gray-100">
+                      <span className="material-symbols-outlined text-gray-600">
+                        link
+                      </span>
+                    </div>
+                    <input
+                      className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
+                      placeholder="https://example.com"
+                      type="url"
+                      defaultValue={profile?.other_url || ""}
                     />
                   </div>
                 </div>
@@ -280,8 +251,6 @@ export default function ProfileSettingsPage() {
               </div>
               </>
             )}
-
-            {activeTab === "tags" && <TagManagement />}
 
             {activeTab === "qiita" && <QiitaIntegration />}
           </div>
