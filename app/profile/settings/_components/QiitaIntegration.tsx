@@ -238,16 +238,16 @@ export default function QiitaIntegration() {
                 <table className="w-full text-left text-sm text-[#6b7280]">
                   <thead className="bg-[#f9fafb] text-xs uppercase text-[#1f2937]">
                     <tr>
-                      <th scope="col" className="px-6 py-3 font-medium">
+                      <th scope="col" className="whitespace-nowrap px-6 py-3 font-medium">
                         タイトル
                       </th>
-                      <th scope="col" className="px-6 py-3 font-medium">
+                      <th scope="col" className="whitespace-nowrap px-6 py-3 font-medium">
                         投稿日
                       </th>
-                      <th scope="col" className="px-6 py-3 text-center font-medium">
+                      <th scope="col" className="whitespace-nowrap px-6 py-3 text-center font-medium">
                         LGTM
                       </th>
-                      <th scope="col" className="px-6 py-3 text-center font-medium">
+                      <th scope="col" className="whitespace-nowrap px-6 py-3 text-center font-medium">
                         ストック
                       </th>
                     </tr>
