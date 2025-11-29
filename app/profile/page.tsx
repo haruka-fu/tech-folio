@@ -248,12 +248,12 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
                     <div className="flex flex-wrap justify-start gap-4">
                       {profile.github_url && (
                         <a
-                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group"
+                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group hover-scale"
                           href={profile.github_url}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200">
+                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200 hover-lift">
                             <svg
                               className="size-6 text-slate-700 group-hover:text-[#2b6cee]"
                               fill="currentColor"
@@ -270,12 +270,12 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
                       )}
                       {profile.twitter_url && (
                         <a
-                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group"
+                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group hover-scale"
                           href={profile.twitter_url}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200">
+                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200 hover-lift">
                             <svg
                               className="size-6 text-slate-700 group-hover:text-[#2b6cee]"
                               fill="currentColor"
@@ -292,12 +292,12 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
                       )}
                       {profile.qiita_url && (
                         <a
-                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group"
+                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group hover-scale"
                           href={profile.qiita_url}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200">
+                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200 hover-lift">
                             <span className="material-symbols-outlined size-6 text-slate-700 group-hover:text-[#2b6cee]">
                               article
                             </span>
@@ -309,12 +309,12 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
                       )}
                       {profile.other_url && (
                         <a
-                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group"
+                          className="flex flex-col items-center justify-center gap-2 text-center w-20 group hover-scale"
                           href={profile.other_url}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200">
+                          <div className="rounded-full bg-slate-100 p-3.5 group-hover:bg-[#2b6cee]/10 transition-colors duration-200 hover-lift">
                             <span className="material-symbols-outlined size-6 text-slate-700 group-hover:text-[#2b6cee]">
                               link
                             </span>
@@ -417,13 +417,13 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
                   const opacity = index < 3 ? 1 : index < 5 ? 0.8 : 0.6;
 
                   return (
-                    <div key={skill.tagName} className="flex items-center gap-4 group">
+                    <div key={skill.tagName} className={`flex items-center gap-4 group slide-in-left ${index < 5 ? `stagger-${index + 1}` : ''}`}>
                       <p className="text-slate-600 font-medium text-sm w-24 shrink-0">
                         {skill.tagName}
                       </p>
-                      <div className="flex-1 bg-slate-100 rounded-full h-8 relative">
+                      <div className="flex-1 bg-slate-100 rounded-full h-8 relative overflow-hidden">
                         <div
-                          className="bg-[#2b6cee] h-full rounded-full flex items-center justify-end pr-3"
+                          className="bg-[#2b6cee] h-full rounded-full flex items-center justify-end pr-3 transition-all duration-700 ease-out hover:opacity-100"
                           style={{
                             width: `${percentage}%`,
                             opacity: opacity,
@@ -446,10 +446,10 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
                   return (
                     <div
                       key={skill.tagName}
-                      className="flex flex-col items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 p-4"
+                      className={`flex flex-col items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 p-4 hover-lift card-glow scale-in ${index < 5 ? `stagger-${index + 1}` : ''}`}
                     >
                       <p
-                        className="text-4xl font-bold text-[#2b6cee]"
+                        className="text-4xl font-bold text-[#2b6cee] transition-all duration-300"
                         style={{ opacity }}
                       >
                         {skill.usageCount}
