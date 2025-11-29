@@ -1,15 +1,120 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import QiitaIntegration from "./_components/QiitaIntegration";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 type SettingsTab = "profile" | "qiita";
 
 export default function ProfileSettingsPage() {
   const { profile, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    display_name: "",
+    bio: "",
+    twitter_url: "",
+    github_url: "",
+    qiita_url: "",
+    other_url: "",
+  });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // プロフィールデータが読み込まれたらフォームを初期化
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        display_name: profile.display_name || "",
+        bio: profile.bio || "",
+        twitter_url: profile.twitter_url || "",
+        github_url: profile.github_url || "",
+        qiita_url: profile.qiita_url || "",
+        other_url: profile.other_url || "",
+      });
+    }
+  }, [profile]);
+
+  // アイコン選択
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 保存処理
+  const handleSave = async () => {
+    if (!profile) return;
+
+    setIsSaving(true);
+    setDisplayNameError(null);
+
+    try {
+      let avatarUrl = profile.avatar_url;
+
+      // アイコンがアップロードされている場合
+      if (avatarFile) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const fileName = `${profile.id}.${fileExt}`;
+
+        // Supabase Storageにアップロード
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, avatarFile, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        // 公開URLを取得
+        const { data } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+        avatarUrl = data.publicUrl;
+      }
+
+      // プロフィールを更新
+      const updateData: any = {
+        display_name: formData.display_name,
+        bio: formData.bio || null,
+        twitter_url: formData.twitter_url || null,
+        github_url: formData.github_url || null,
+        qiita_url: formData.qiita_url || null,
+        other_url: formData.other_url || null,
+        avatar_url: avatarUrl,
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      alert('プロフィールを保存しました');
+      window.location.reload();
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('保存に失敗しました');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // ローディング中の表示
   if (isLoading) {
@@ -101,34 +206,37 @@ export default function ProfileSettingsPage() {
                 <div className="flex w-full flex-col gap-4 md:flex-row md:items-center justify-between border-b pb-6">
                   <div className="flex items-center gap-5">
                     <div className="relative">
-                      {profile?.avatar_url ? (
+                      {avatarPreview || profile?.avatar_url ? (
                         <div
-                          className="w-24 h-24 rounded-full bg-cover bg-center bg-no-repeat"
+                          className="w-24 h-24 rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-200"
                           data-alt="Current user avatar"
                           style={{
-                            backgroundImage: `url("${profile.avatar_url}")`,
+                            backgroundImage: `url("${avatarPreview || profile?.avatar_url}")`,
                           }}
                         />
                       ) : (
-                        <div className="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center">
+                        <div className="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center border-2 border-slate-300">
                           <span className="material-symbols-outlined text-4xl text-slate-500">
                             person
                           </span>
                         </div>
                       )}
-                      <button className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90 transition-colors">
+                      <button
+                        type="button"
+                        onClick={handleAvatarClick}
+                        className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90 transition-colors"
+                      >
                         <span className="material-symbols-outlined text-base">
                           edit
                         </span>
                       </button>
-                    </div>
-                    <div className="flex flex-col justify-center">
-                      <p className="text-gray-900 text-lg font-bold leading-tight">
-                        アバター
-                      </p>
-                      <p className="text-gray-500 text-sm font-normal leading-normal mt-1">
-                        推奨: 400x400px, PNG or JPG
-                      </p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
                     </div>
                   </div>
                 </div>
@@ -142,12 +250,23 @@ export default function ProfileSettingsPage() {
                         表示名
                       </label>
                       <input
-                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
+                        className={`form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal ${
+                          displayNameError ? 'border-red-500' : 'border-gray-300'
+                        }`}
                         id="display-name"
                         type="text"
-                        defaultValue={profile?.display_name || ""}
+                        value={formData.display_name}
+                        onChange={(e) => {
+                          setFormData({ ...formData, display_name: e.target.value });
+                          setDisplayNameError(null);
+                        }}
                         placeholder="表示名を入力"
                       />
+                      {displayNameError && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {displayNameError}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col gap-6">
@@ -162,7 +281,8 @@ export default function ProfileSettingsPage() {
                         className="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] placeholder:text-gray-400 p-4 text-base font-normal leading-normal"
                         id="bio"
                         rows={4}
-                        defaultValue={profile?.bio || ""}
+                        value={formData.bio}
+                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                         placeholder="自己紹介を入力"
                       />
                     </div>
@@ -191,7 +311,8 @@ export default function ProfileSettingsPage() {
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
                       placeholder="https://x.com/username"
                       type="url"
-                      defaultValue={profile?.twitter_url || ""}
+                      value={formData.twitter_url}
+                      onChange={(e) => setFormData({ ...formData, twitter_url: e.target.value })}
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -208,7 +329,8 @@ export default function ProfileSettingsPage() {
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
                       placeholder="https://github.com/username"
                       type="url"
-                      defaultValue={profile?.github_url || ""}
+                      value={formData.github_url}
+                      onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -221,7 +343,8 @@ export default function ProfileSettingsPage() {
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
                       placeholder="https://qiita.com/username"
                       type="url"
-                      defaultValue={profile?.qiita_url || ""}
+                      value={formData.qiita_url}
+                      onChange={(e) => setFormData({ ...formData, qiita_url: e.target.value })}
                     />
                   </div>
                   <div className="flex items-center gap-3">
@@ -234,18 +357,33 @@ export default function ProfileSettingsPage() {
                       className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-2 focus:ring-[#4A90E2]/50 border border-gray-300 bg-white focus:border-[#4A90E2] h-12 placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
                       placeholder="https://example.com"
                       type="url"
-                      defaultValue={profile?.other_url || ""}
+                      value={formData.other_url}
+                      onChange={(e) => setFormData({ ...formData, other_url: e.target.value })}
                     />
                   </div>
                 </div>
               </section>
 
                 <div className="flex flex-col-reverse items-center justify-end gap-3 pt-4 sm:flex-row">
-                  <button className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-white border border-gray-300 text-gray-700 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => window.location.reload()}
+                    disabled={isSaving}
+                    className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-white border border-gray-300 text-gray-700 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     <span className="truncate">キャンセル</span>
                   </button>
-                  <button className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#2b6cee] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2b6cee]/90 transition-colors">
-                    <span className="truncate">変更を保存</span>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#2b6cee] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2b6cee]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSaving ? (
+                      <span className="truncate">保存中...</span>
+                    ) : (
+                      <span className="truncate">変更を保存</span>
+                    )}
                   </button>
                 </div>
               </div>
