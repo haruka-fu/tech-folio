@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Docker環境でのホットリロードを有効化
+  // Next.js 16でTurbopackがデフォルトで有効
+  // 空の設定を追加してwebpack設定との競合を回避
+  turbopack: {},
+
+  // Docker環境でのホットリロードを有効化（開発環境のみ）
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
       // ファイル監視にpollingを使用（Docker環境で必須）
