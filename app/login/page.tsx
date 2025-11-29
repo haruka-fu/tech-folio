@@ -30,10 +30,26 @@ function LoginPageContent() {
       setIsLoading(true);
       setError(null);
 
+      // Vercel環境変数を優先的に使用してリダイレクトURLを構築
+      const getRedirectURL = () => {
+        let url =
+          process.env.NEXT_PUBLIC_SITE_URL ?? // 本番環境のサイトURL
+          (typeof window !== 'undefined' ? window.location.origin : ''); // フォールバック
+
+        // httpsプレフィックスを確認（localhostを除く）
+        if (url && !url.startsWith('http')) {
+          url = `https://${url}`;
+        }
+
+        return url;
+      };
+
+      const redirectUrl = `${getRedirectURL()}/auth/callback`;
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         },
       });
 
