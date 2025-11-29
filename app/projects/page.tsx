@@ -175,10 +175,41 @@ export default function ProjectsPage() {
     loadQiitaArticles();
   }, []);
 
-  // DBのタグ一覧を取得
+  // DBの全タグを取得し、使用件数順にソート
   const availableTags = useMemo(() => {
-    return allTags.map(tag => tag.name).sort();
-  }, [allTags]);
+    const tagCountMap = new Map<string, number>();
+
+    // DBの全タグを初期化（件数0で）
+    allTags.forEach(tag => {
+      tagCountMap.set(tag.name, 0);
+    });
+
+    // プロジェクトのタグをカウント
+    allProjects.forEach(project => {
+      project.tags.forEach(tag => {
+        const count = tagCountMap.get(tag.name) || 0;
+        tagCountMap.set(tag.name, count + 1);
+      });
+    });
+
+    // Qiitaのタグをカウント
+    qiitaArticles.forEach(article => {
+      article.tags.forEach(tag => {
+        const count = tagCountMap.get(tag.name) || 0;
+        tagCountMap.set(tag.name, count + 1);
+      });
+    });
+
+    // タグを件数順（降順）でソート、件数が同じ場合は名前順
+    return Array.from(tagCountMap.entries())
+      .sort((a, b) => {
+        if (b[1] !== a[1]) {
+          return b[1] - a[1]; // 件数の降順
+        }
+        return a[0].localeCompare(b[0]); // 名前の昇順
+      })
+      .map(([tagName]) => tagName);
+  }, [allTags, allProjects, qiitaArticles]);
 
   // 使用中の工程一覧を取得
   const usedRoles = useMemo(() => {
@@ -323,7 +354,7 @@ export default function ProjectsPage() {
             {!hasQiitaToken && !qiitaLoading && (
               <Link
                 href="/profile/settings?tab=qiita"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#55c500] px-4 py-2 text-sm font-medium text-white hover:bg-[#4ab000]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#55c500] px-4 py-2 text-sm font-medium text-white hover:bg-[#4ab000] btn-shimmer btn-glow"
               >
                 Qiitaと連携する
               </Link>
@@ -334,10 +365,10 @@ export default function ProjectsPage() {
           <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
             <button
               onClick={() => setActiveTab("all")}
-              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 activeTab === "all"
-                  ? "bg-white text-[#1f2937] shadow-sm"
-                  : "text-[#6b7280] hover:text-[#1f2937]"
+                  ? "bg-white text-[#1f2937] shadow-sm scale-in"
+                  : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
               }`}
             >
               すべて
@@ -347,10 +378,10 @@ export default function ProjectsPage() {
             </button>
             <button
               onClick={() => setActiveTab("project")}
-              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 activeTab === "project"
-                  ? "bg-white text-[#1f2937] shadow-sm"
-                  : "text-[#6b7280] hover:text-[#1f2937]"
+                  ? "bg-white text-[#1f2937] shadow-sm scale-in"
+                  : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
               }`}
             >
               案件
@@ -360,10 +391,10 @@ export default function ProjectsPage() {
             </button>
             <button
               onClick={() => setActiveTab("qiita")}
-              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 activeTab === "qiita"
-                  ? "bg-white text-[#55c500] shadow-sm"
-                  : "text-[#6b7280] hover:text-[#1f2937]"
+                  ? "bg-white text-[#55c500] shadow-sm scale-in"
+                  : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
               }`}
             >
               Qiita
@@ -555,23 +586,23 @@ export default function ProjectsPage() {
               </div>
             ) : (
               <>
-                {displayedItems.map((item) => {
+                {displayedItems.map((item, index) => {
                   if (item.type === "project") {
                     const project = item.data;
                     return (
                       <Link
                         key={`project-${project.id}`}
                         href={`/projects/${project.id}`}
-                        className="project-card"
+                        className={`project-card slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''}`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                              <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 tag-bounce">
                                 案件
                               </span>
                               {project.is_current && (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 tag-pulse">
                                   進行中
                                 </span>
                               )}
@@ -593,7 +624,7 @@ export default function ProjectsPage() {
                           {project.tags.map((tag) => (
                             <span
                               key={tag.id}
-                              className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium"
+                              className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium tag-bounce"
                               style={{
                                 backgroundColor: tag.color ? `${tag.color}20` : '#f3f4f6',
                                 color: tag.color || '#374151'
@@ -610,7 +641,7 @@ export default function ProjectsPage() {
                             {project.role_names.map((role) => (
                               <span
                                 key={role}
-                                className="inline-flex items-center rounded-md border border-[#e5e7eb] bg-white px-2 py-1 text-xs font-medium text-[#6b7280]"
+                                className="inline-flex items-center rounded-md border border-[#e5e7eb] bg-white px-2 py-1 text-xs font-medium text-[#6b7280] hover-scale"
                               >
                                 {role}
                               </span>
@@ -627,12 +658,12 @@ export default function ProjectsPage() {
                         href={article.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="project-card border-l-4 border-l-[#55c500]"
+                        className={`project-card border-l-4 border-l-[#55c500] slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''}`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center gap-1 rounded-full bg-[#55c500]/10 px-2.5 py-0.5 text-xs font-medium text-[#55c500]">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[#55c500]/10 px-2.5 py-0.5 text-xs font-medium text-[#55c500] tag-bounce">
                                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
                                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                                 </svg>
@@ -651,11 +682,11 @@ export default function ProjectsPage() {
                             </p>
                           </div>
                           <div className="ml-4 flex flex-col items-end gap-1 text-xs text-[#6b7280]">
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1 hover-scale">
                               <span className="material-symbols-outlined text-sm">thumb_up</span>
                               {article.likes_count}
                             </span>
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1 hover-scale">
                               <span className="material-symbols-outlined text-sm">bookmark</span>
                               {article.stocks_count}
                             </span>
@@ -667,7 +698,7 @@ export default function ProjectsPage() {
                           {article.tags.map((tag) => (
                             <span
                               key={tag.name}
-                              className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600"
+                              className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 tag-bounce"
                             >
                               {tag.name}
                             </span>
