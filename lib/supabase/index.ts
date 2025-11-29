@@ -21,6 +21,8 @@ export type Profile = {
   user_id: string;
   /** 表示名 */
   display_name: string;
+  /** ユーザーID変更回数（1回のみ変更可能） */
+  user_id_change_count: number;
   /** メールアドレス */
   email: string | null;
   /** 自己紹介 */

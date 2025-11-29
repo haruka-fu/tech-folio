@@ -52,12 +52,12 @@ export default function AppHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 border-b border-[#e5e7eb] bg-white/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-20 border-b border-[#e5e7eb] bg-white/80 backdrop-blur-sm slide-in-up">
         <div className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 lg:px-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-3 text-[#1f2937]">
-                <div className="size-6 text-[#2b6cee]">
+              <Link href="/" className="flex items-center gap-3 text-[#1f2937] hover-scale">
+                <div className="size-6 text-[#2b6cee] hover-scale">
                   <svg
                     aria-hidden
                     className="text-[#2b6cee]"
@@ -71,18 +71,18 @@ export default function AppHeader() {
                 <h2 className="text-lg font-semibold">TechFolio</h2>
               </Link>
             </div>
-            <div className="hidden items-center gap-4 text-sm text-[#6b7280] md:flex">
-              <Link href="/" className="hover:text-[#111827]">
-                プロジェクト一覧
+            <div className="hidden items-center gap-6 text-sm text-[#6b7280] md:flex">
+              <Link href="/" className="underline-center transition-colors hover:text-[#111827]">
+                アクティビティ
               </Link>
-              <Link href="/profile" className="hover:text-[#111827]">
+              <Link href="/profile" className="underline-center transition-colors hover:text-[#111827]">
                 スキル一覧
               </Link>
             </div>
             <div className="flex items-center gap-3 w-[284px] justify-end">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex"
+                className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex btn-shimmer btn-glow"
               >
                 新規プロジェクト追加
               </button>
@@ -90,7 +90,7 @@ export default function AppHeader() {
                 {profile?.avatar_url ? (
                   <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee]"
+                    className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee] hover-scale"
                     style={{
                       backgroundImage: `url("${profile.avatar_url}")`,
                     }}
@@ -98,7 +98,7 @@ export default function AppHeader() {
                 ) : (
                   <button
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="size-10 aspect-square cursor-pointer rounded-full bg-slate-200 border-2 border-slate-300 transition-all hover:border-[#2b6cee] flex items-center justify-center"
+                    className="size-10 aspect-square cursor-pointer rounded-full bg-slate-200 border-2 border-slate-300 transition-all hover:border-[#2b6cee] hover-scale flex items-center justify-center"
                   >
                     <span className="material-symbols-outlined text-slate-500">
                       person
@@ -111,14 +111,14 @@ export default function AppHeader() {
                       className="fixed inset-0 z-10"
                       onClick={() => setIsMenuOpen(false)}
                     />
-                    <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-lg">
+                    <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-lg scale-in">
                       <div className="py-1">
                         <Link
                           href="/profile/settings"
                           onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-symbols-outlined text-xl text-scale">
                             settings
                           </span>
                           設定
@@ -128,9 +128,9 @@ export default function AppHeader() {
                             setIsMenuOpen(false);
                             handleLogout();
                           }}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-symbols-outlined text-xl text-scale">
                             logout
                           </span>
                           ログアウト
