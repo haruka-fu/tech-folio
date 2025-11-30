@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AppHeader from "./_components/AppHeader";
+import AppFooter from "./_components/AppFooter";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tech Folio Dashboard",
-  description: "個人向けポートフォリオ管理ダッシュボードの最小実装デモです。",
+  title: "Tech Folio - プロジェクトとスキルを一元管理",
+  description: "Tech Folioは、エンジニアのためのポートフォリオ管理ダッシュボードです。プロジェクト実績を管理・可視化し、スキルセットを効果的にアピールできます。",
 };
 
 export default function RootLayout({
@@ -35,12 +36,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-[#f8f9fa] text-[#111827] antialiased`}
       >
         <AppHeader />
-        <div className="mx-auto flex min-h-screen max-w-[1400px] flex-col px-4 py-6 sm:px-8">
-          <main className="flex-1 pb-10">{children}</main>
-          <footer className="mt-10 border-t border-white/10 pt-4 text-center text-xs text-slate-500">
-            &copy; {new Date().getFullYear()} Tech Folio Demo
-          </footer>
-        </div>
+        <main className="mx-auto min-h-screen max-w-[1400px] px-4 py-6 sm:px-8">
+          {children}
+        </main>
+        <AppFooter />
       </body>
     </html>
   );
