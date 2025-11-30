@@ -1,4 +1,4 @@
-import type { ProjectWithDetails } from "@/lib/supabase";
+import type { ProjectWithDetails, Profile } from "@/lib/supabase";
 
 // デモ用のサンプルプロジェクトデータ
 export const demoProjects: ProjectWithDetails[] = [
@@ -98,3 +98,100 @@ export const demoProjects: ProjectWithDetails[] = [
     updated_at: "2023-03-31",
   },
 ];
+
+// Qiita記事の型定義
+export interface QiitaArticle {
+  id: string;
+  title: string;
+  url: string;
+  likes_count: number;
+  stocks_count: number;
+  created_at: string;
+  tags: { name: string }[];
+}
+
+// デモ用のQiita記事データ
+export const demoQiitaArticles: QiitaArticle[] = [
+  {
+    id: "qiita-demo-1",
+    title: "Next.js 16でApp Routerを使った最新のWebアプリケーション開発",
+    url: "#",
+    likes_count: 125,
+    stocks_count: 89,
+    created_at: "2024-08-15T10:00:00Z",
+    tags: [
+      { name: "Next.js" },
+      { name: "React" },
+      { name: "TypeScript" },
+    ],
+  },
+  {
+    id: "qiita-demo-2",
+    title: "Supabaseを使ったリアルタイム認証の実装方法",
+    url: "#",
+    likes_count: 98,
+    stocks_count: 67,
+    created_at: "2024-07-20T14:30:00Z",
+    tags: [
+      { name: "Supabase" },
+      { name: "PostgreSQL" },
+      { name: "認証" },
+    ],
+  },
+  {
+    id: "qiita-demo-3",
+    title: "TailwindCSSで作る美しいUIコンポーネント集",
+    url: "#",
+    likes_count: 156,
+    stocks_count: 112,
+    created_at: "2024-06-10T09:15:00Z",
+    tags: [
+      { name: "Tailwind CSS" },
+      { name: "CSS" },
+      { name: "デザイン" },
+    ],
+  },
+  {
+    id: "qiita-demo-4",
+    title: "AWS Lambdaとサーバーレスアーキテクチャの実践",
+    url: "#",
+    likes_count: 78,
+    stocks_count: 54,
+    created_at: "2024-05-05T16:45:00Z",
+    tags: [
+      { name: "AWS" },
+      { name: "Lambda" },
+      { name: "サーバーレス" },
+    ],
+  },
+  {
+    id: "qiita-demo-5",
+    title: "Dockerを使った開発環境の効率化テクニック",
+    url: "#",
+    likes_count: 92,
+    stocks_count: 71,
+    created_at: "2024-04-12T11:20:00Z",
+    tags: [
+      { name: "Docker" },
+      { name: "DevOps" },
+      { name: "環境構築" },
+    ],
+  },
+];
+
+// デモ用のプロフィールデータ
+export const demoProfile = {
+  id: "demo-profile-1",
+  user_id: "demo-user",
+  display_name: "山田 太郎",
+  email: "demo@example.com",
+  avatar_url: null,
+  bio: "フルスタックエンジニアとして5年以上の経験があります。React/Next.jsを中心としたフロントエンド開発から、Node.js/Pythonを使ったバックエンド開発まで幅広く対応可能です。",
+  github_url: "https://github.com",
+  twitter_url: "https://twitter.com",
+  qiita_url: "https://qiita.com",
+  other_url: null,
+  qiita_token_encrypted: null,
+  created_at: "2022-01-01T00:00:00Z",
+  updated_at: "2024-11-30T00:00:00Z",
+};

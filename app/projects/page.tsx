@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role, Tag } from "@/lib/supabase";
-import { demoProjects } from "@/lib/demo-data";
+import { demoProjects, demoQiitaArticles } from "@/lib/demo-data";
 
 const supabase = createClient();
 
@@ -166,6 +166,14 @@ export default function ProjectsPage() {
     const loadQiitaArticles = async () => {
       setQiitaLoading(true);
       try {
+        // デモモードの場合はデモデータを使用
+        if (isDemoMode) {
+          setQiitaArticles(demoQiitaArticles);
+          setHasQiitaToken(true); // デモモードでは連携済みとして扱う
+          setQiitaLoading(false);
+          return;
+        }
+
         const response = await fetch("/api/qiita/articles");
         const data = await response.json();
         setQiitaArticles(data.articles || []);
@@ -178,7 +186,7 @@ export default function ProjectsPage() {
     };
 
     loadQiitaArticles();
-  }, []);
+  }, [isDemoMode]);
 
   // DBの全タグを取得し、使用件数順にソート
   const availableTags = useMemo(() => {
@@ -356,7 +364,7 @@ export default function ProjectsPage() {
                 プロジェクトとQiita記事を時系列で表示します。
               </p>
             </div>
-            {!hasQiitaToken && !qiitaLoading && (
+            {!hasQiitaToken && !qiitaLoading && !isDemoMode && (
               <Link
                 href="/profile/settings?tab=qiita"
                 className="inline-flex items-center gap-2 rounded-lg bg-[#55c500] px-4 py-2 text-sm font-medium text-white hover:bg-[#4ab000] btn-shimmer btn-glow"

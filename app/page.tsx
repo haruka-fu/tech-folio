@@ -1,4 +1,34 @@
-"use client";import { useState, useEffect } from "react";import Link from "next/link";import { createClient } from "@/lib/supabase/client";const supabase = createClient();export default function HomePage() {  const [isLoggedIn, setIsLoggedIn] = useState(false);  const [isLoading, setIsLoading] = useState(true);  useEffect(() => {    const checkAuth = async () => {      try {        const { data: { user } } = await supabase.auth.getUser();        setIsLoggedIn(!!user);      } catch (error) {        console.error("Auth check error:", error);      } finally {        setIsLoading(false);      }    };    checkAuth();    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {      setIsLoggedIn(!!session?.user);    });    return () => {      subscription.unsubscribe();    };  }, []);
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+const supabase = createClient();
+export default function HomePage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setIsLoggedIn(!!user);
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   return (
     <div className="mx-auto max-w-6xl">
       {/* ヒーローセクション */}
@@ -16,9 +46,7 @@
             </svg>
           </div>
         </div>
-        <h1 className="mb-4 text-5xl font-black text-[#1f2937]">
-          Tech Folio
-        </h1>
+        <h1 className="mb-4 text-5xl font-black text-[#1f2937]">Tech Folio</h1>
         <p className="mb-8 text-xl text-[#6b7280]">
           あなたのプロジェクトとスキルを一元管理する
           <br />
@@ -99,7 +127,6 @@
         </div>
       </section>
 
-
       {/* 使い方の流れセクション */}
       <section className="mb-16">
         <h2 className="mb-10 text-center text-3xl font-bold text-[#1f2937]">
@@ -171,9 +198,7 @@
               school
             </span>
             <div>
-              <h3 className="mb-2 text-lg font-bold text-[#1f2937]">
-                学習者
-              </h3>
+              <h3 className="mb-2 text-lg font-bold text-[#1f2937]">学習者</h3>
               <p className="text-sm text-[#6b7280]">
                 学習した技術や作成したプロジェクトを記録し、自身の成長を可視化したい方
               </p>
@@ -213,9 +238,7 @@
       {/* CTAセクション */}
       {!isLoggedIn ? (
         <section className="mb-8 rounded-2xl bg-gradient-to-br from-[#2b6cee] to-[#1e40af] p-12 text-center text-white shadow-xl">
-          <h2 className="mb-4 text-3xl font-bold">
-            今すぐ始めましょう
-          </h2>
+          <h2 className="mb-4 text-3xl font-bold">今すぐ始めましょう</h2>
           <p className="mb-8 text-lg opacity-90">
             Googleアカウントで簡単にログインできます
           </p>
@@ -239,7 +262,9 @@
             href="/projects"
             className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 text-base font-semibold text-[#10b981] shadow-lg transition-all hover:bg-gray-50 hover:shadow-xl"
           >
-            <span className="material-symbols-outlined text-xl">folder_open</span>
+            <span className="material-symbols-outlined text-xl">
+              folder_open
+            </span>
             アクティビティを見る
           </Link>
         </section>
