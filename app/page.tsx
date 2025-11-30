@@ -1,6 +1,4 @@
-import Link from "next/link";
-
-export default function HomePage() {
+"use client";import { useState, useEffect } from "react";import Link from "next/link";import { createClient } from "@/lib/supabase/client";const supabase = createClient();export default function HomePage() {  const [isLoggedIn, setIsLoggedIn] = useState(false);  const [isLoading, setIsLoading] = useState(true);  useEffect(() => {    const checkAuth = async () => {      try {        const { data: { user } } = await supabase.auth.getUser();        setIsLoggedIn(!!user);      } catch (error) {        console.error("Auth check error:", error);      } finally {        setIsLoading(false);      }    };    checkAuth();  }, []);
   return (
     <div className="mx-auto max-w-6xl">
       {/* ヒーローセクション */}
@@ -27,19 +25,23 @@ export default function HomePage() {
           ポートフォリオダッシュボード
         </p>
         <div className="flex justify-center gap-4">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#2b6cee] px-8 py-3 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#2357c9] hover:shadow-xl"
-          >
-            <span className="material-symbols-outlined text-xl">login</span>
-            ログインして始める
-          </Link>
+          {!isLoggedIn && (
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#2b6cee] px-8 py-3 text-base font-semibold text-white shadow-lg transition-all hover:bg-[#2357c9] hover:shadow-xl"
+            >
+              <span className="material-symbols-outlined text-xl">login</span>
+              ログインして始める
+            </Link>
+          )}
           <Link
             href="/projects"
             className="inline-flex items-center gap-2 rounded-lg border border-[#e5e7eb] bg-white px-8 py-3 text-base font-semibold text-[#1f2937] shadow transition-all hover:bg-gray-50 hover:shadow-md"
           >
-            <span className="material-symbols-outlined text-xl">visibility</span>
-            デモを見る
+            <span className="material-symbols-outlined text-xl">
+              {isLoggedIn ? "folder_open" : "visibility"}
+            </span>
+            {isLoggedIn ? "アクティビティ" : "デモを見る"}
           </Link>
         </div>
       </section>
