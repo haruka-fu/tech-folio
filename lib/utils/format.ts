@@ -19,3 +19,17 @@ export function formatPeriod(start: string, end: string | null, isCurrent: boole
 
   return end ? `${formatMonth(start)} 〜 ${formatMonth(end)}` : formatMonth(start);
 }
+
+/**
+ * ISO8601形式の日付文字列を日本語フォーマットに変換
+ * @param dateString ISO8601形式の日付文字列
+ * @returns YYYY/MM/DD形式の文字列
+ */
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+}
