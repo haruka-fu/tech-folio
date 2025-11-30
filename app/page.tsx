@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/client";
 const supabase = createClient();
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -15,8 +14,6 @@ export default function HomePage() {
         setIsLoggedIn(!!user);
       } catch (error) {
         console.error("Auth check error:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
     checkAuth();
@@ -135,7 +132,7 @@ export default function HomePage() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* ステップ1 */}
           <div className="relative">
-            <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-[#2b6cee] to-[#1e40af] text-2xl font-bold text-white shadow-lg">
+            <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-[#2b6cee] to-[#1e40af] text-2xl font-bold text-white shadow-lg">
               1
             </div>
             <h3 className="mb-3 text-xl font-bold text-[#1f2937]">
@@ -148,7 +145,7 @@ export default function HomePage() {
 
           {/* ステップ2 */}
           <div className="relative">
-            <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-[#10b981] to-[#059669] text-2xl font-bold text-white shadow-lg">
+            <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-[#10b981] to-[#059669] text-2xl font-bold text-white shadow-lg">
               2
             </div>
             <h3 className="mb-3 text-xl font-bold text-[#1f2937]">
@@ -161,7 +158,7 @@ export default function HomePage() {
 
           {/* ステップ3 */}
           <div className="relative">
-            <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-[#f59e0b] to-[#d97706] text-2xl font-bold text-white shadow-lg">
+            <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-[#f59e0b] to-[#d97706] text-2xl font-bold text-white shadow-lg">
               3
             </div>
             <h3 className="mb-3 text-xl font-bold text-[#1f2937]">
@@ -237,7 +234,7 @@ export default function HomePage() {
 
       {/* CTAセクション */}
       {!isLoggedIn ? (
-        <section className="mb-8 rounded-2xl bg-gradient-to-br from-[#2b6cee] to-[#1e40af] p-12 text-center text-white shadow-xl">
+        <section className="mb-8 rounded-2xl bg-linear-to-br from-[#2b6cee] to-[#1e40af] p-12 text-center text-white shadow-xl">
           <h2 className="mb-4 text-3xl font-bold">今すぐ始めましょう</h2>
           <p className="mb-8 text-lg opacity-90">
             Googleアカウントで簡単にログインできます
@@ -251,7 +248,7 @@ export default function HomePage() {
           </Link>
         </section>
       ) : (
-        <section className="mb-8 rounded-2xl bg-gradient-to-br from-[#10b981] to-[#059669] p-12 text-center text-white shadow-xl">
+        <section className="mb-8 rounded-2xl bg-linear-to-br from-[#10b981] to-[#059669] p-12 text-center text-white shadow-xl">
           <h2 className="mb-4 text-3xl font-bold">
             プロジェクトを管理しましょう
           </h2>

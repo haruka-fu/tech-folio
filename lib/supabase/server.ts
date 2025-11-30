@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 /**
@@ -79,7 +79,7 @@ export async function createClient() {
           cookiesToSet.forEach(({ name, value, options }) =>
             cookieStore.set(name, value, options)
           );
-        } catch (error) {
+        } catch {
           // Server Componentから呼ばれた場合はクッキーの設定ができない
           // ミドルウェアでセッション更新を行っている場合は無視して問題ない
           // 詳細: https://supabase.com/docs/guides/auth/server-side/nextjs
