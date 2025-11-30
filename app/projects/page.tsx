@@ -5,29 +5,14 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role, Tag } from "@/lib/supabase";
 import { demoProjects, demoQiitaArticles, demoRoles, demoTags } from "@/lib/demo-data";
+import type { QiitaArticle, TimelineItem, FilterTab } from "@/lib/types/project";
+import { createTagColorMap } from "@/lib/utils/tags";
+import ProjectCard from "@/app/projects/_components/ProjectCard";
+import QiitaCard from "@/app/projects/_components/QiitaCard";
 
 const supabase = createClient();
 
 const ITEMS_PER_PAGE = 20;
-
-// Qiita記事の型定義
-interface QiitaArticle {
-  id: string;
-  title: string;
-  url: string;
-  likes_count: number;
-  stocks_count: number;
-  created_at: string;
-  tags: { name: string }[];
-}
-
-// 統合アイテムの型定義
-type TimelineItem =
-  | { type: "project"; data: ProjectWithDetails; date: Date }
-  | { type: "qiita"; data: QiitaArticle; date: Date };
-
-// タブの型定義
-type FilterTab = "all" | "project" | "qiita";
 
 export default function ProjectsPage() {
   const [allProjects, setAllProjects] = useState<ProjectWithDetails[]>([]);
@@ -192,13 +177,7 @@ export default function ProjectsPage() {
   }, [isDemoMode, isLoading]);
 
   // タグ名から色を取得するためのMap
-  const tagColorMap = useMemo(() => {
-    const map = new Map<string, string>();
-    allTags.forEach(tag => {
-      map.set(tag.name.toLowerCase(), tag.color || '#6B7280');
-    });
-    return map;
-  }, [allTags]);
+  const tagColorMap = useMemo(() => createTagColorMap(allTags), [allTags]);
 
   // DBの全タグを取得し、タグ名の昇順でソート（Qiitaのタグは含めない）
   const availableTags = useMemo(() => {
@@ -326,20 +305,6 @@ export default function ProjectsPage() {
       }
     };
   }, [hasMore, isLoading, qiitaLoading]);
-
-  // 期間表示フォーマット
-  const formatPeriod = (start: string, end: string | null, isCurrent: boolean) => {
-    const formatMonth = (dateStr: string) => {
-      const [year, month] = dateStr.split("-");
-      return `${year}年${month}月`;
-    };
-
-    if (isCurrent) {
-      return `${formatMonth(start)} 〜 現在`;
-    }
-
-    return end ? `${formatMonth(start)} 〜 ${formatMonth(end)}` : formatMonth(start);
-  };
 
   const bothLoading = isLoading || qiitaLoading;
 
@@ -626,144 +591,25 @@ export default function ProjectsPage() {
               <>
                 {displayedItems.map((item, index) => {
                   if (item.type === "project") {
-                    const project = item.data;
-                    const handleClick = (e: React.MouseEvent) => {
-                      if (isDemoMode) {
-                        e.preventDefault();
-                        setShowLoginModal(true);
-                      }
-                    };
                     return (
-                      <Link
-                        key={`project-${project.id}`}
-                        href={`/projects/${project.id}`}
-                        onClick={handleClick}
-                        className={`project-card slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''}`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 tag-bounce">
-                                案件
-                              </span>
-                              {project.is_current && (
-                                <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 tag-pulse">
-                                  進行中
-                                </span>
-                              )}
-                            </div>
-                            <p className="mt-2 text-base font-bold leading-normal text-[#1f2937]">
-                              {project.title}
-                            </p>
-                            <p className="mt-1 text-sm font-normal leading-normal text-[#6b7280]">
-                              {project.summary}
-                            </p>
-                            <p className="mt-2 text-xs font-medium text-[#9ca3af]">
-                              {formatPeriod(project.period_start, project.period_end, project.is_current)}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Tags */}
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {project.tags.map((tag) => (
-                            <span
-                              key={tag.id}
-                              className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium tag-bounce"
-                              style={{
-                                backgroundColor: tag.color ? `${tag.color}20` : '#f3f4f6',
-                                color: tag.color || '#374151'
-                              }}
-                            >
-                              {tag.name}
-                            </span>
-                          ))}
-                        </div>
-
-                        {/* Roles */}
-                        {project.role_names.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            {project.role_names.map((role) => (
-                              <span
-                                key={role}
-                                className="inline-flex items-center rounded-md border border-[#e5e7eb] bg-white px-2 py-1 text-xs font-medium text-[#6b7280] hover-scale"
-                              >
-                                {role}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </Link>
+                      <ProjectCard
+                        key={`project-${item.data.id}`}
+                        project={item.data}
+                        index={index}
+                        isDemoMode={isDemoMode}
+                        onDemoClick={() => setShowLoginModal(true)}
+                      />
                     );
                   } else {
-                    const article = item.data;
-                    const handleQiitaClick = (e: React.MouseEvent) => {
-                      if (isDemoMode) {
-                        e.preventDefault();
-                        setShowLoginModal(true);
-                      }
-                    };
                     return (
-                      <a
-                        key={`qiita-${article.id}`}
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={handleQiitaClick}
-                        className={`project-card border-l-4 border-l-[#55c500] slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''}`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center gap-1 rounded-full bg-[#55c500]/10 px-2.5 py-0.5 text-xs font-medium text-[#55c500] tag-bounce">
-                                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-                                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                                </svg>
-                                Qiita
-                              </span>
-                            </div>
-                            <p className="mt-2 text-base font-bold leading-normal text-[#1f2937]">
-                              {article.title}
-                            </p>
-                            <p className="mt-2 text-xs font-medium text-[#9ca3af]">
-                              {new Date(article.created_at).toLocaleDateString("ja-JP", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })}
-                            </p>
-                          </div>
-                          <div className="ml-4 flex flex-col items-end gap-1 text-xs text-[#6b7280]">
-                            <span className="flex items-center gap-1 hover-scale">
-                              <span className="material-symbols-outlined text-sm">thumb_up</span>
-                              {article.likes_count}
-                            </span>
-                            <span className="flex items-center gap-1 hover-scale">
-                              <span className="material-symbols-outlined text-sm">bookmark</span>
-                              {article.stocks_count}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Tags */}
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {article.tags.map((tag) => {
-                            const color = tagColorMap.get(tag.name.toLowerCase()) || '#6B7280';
-                            return (
-                              <span
-                                key={tag.name}
-                                className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium tag-bounce"
-                                style={{
-                                  backgroundColor: `${color}20`,
-                                  color: color
-                                }}
-                              >
-                                {tag.name}
-                              </span>
-                            );
-                          })}
-                        </div>
-                      </a>
+                      <QiitaCard
+                        key={`qiita-${item.data.id}`}
+                        article={item.data}
+                        index={index}
+                        isDemoMode={isDemoMode}
+                        tagColorMap={tagColorMap}
+                        onDemoClick={() => setShowLoginModal(true)}
+                      />
                     );
                   }
                 })}
