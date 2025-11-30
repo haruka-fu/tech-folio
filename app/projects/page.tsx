@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role, Tag } from "@/lib/supabase";
-import { demoProjects, demoQiitaArticles, demoRoles } from "@/lib/demo-data";
+import { demoProjects, demoQiitaArticles, demoRoles, demoTags } from "@/lib/demo-data";
 
 const supabase = createClient();
 
@@ -80,6 +80,7 @@ export default function ProjectsPage() {
         if (!user) {
           setIsDemoMode(true);
           setAllProjects(demoProjects);
+          setAllTags(demoTags);
           setAllRoles(demoRoles);
           setQiitaArticles(demoQiitaArticles);
           setHasQiitaToken(true);
@@ -190,7 +191,16 @@ export default function ProjectsPage() {
     loadQiitaArticles();
   }, [isDemoMode, isLoading]);
 
-  // DBの全タグを取得し、使用件数順にソート
+  // タグ名から色を取得するためのMap
+  const tagColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    allTags.forEach(tag => {
+      map.set(tag.name.toLowerCase(), tag.color || '#6B7280');
+    });
+    return map;
+  }, [allTags]);
+
+  // DBの全タグを取得し、タグ名の昇順でソート（Qiitaのタグは含めない）
   const availableTags = useMemo(() => {
     const tagCountMap = new Map<string, number>();
 
@@ -207,24 +217,11 @@ export default function ProjectsPage() {
       });
     });
 
-    // Qiitaのタグをカウント
-    qiitaArticles.forEach(article => {
-      article.tags.forEach(tag => {
-        const count = tagCountMap.get(tag.name) || 0;
-        tagCountMap.set(tag.name, count + 1);
-      });
-    });
-
-    // タグを件数順（降順）でソート、件数が同じ場合は名前順
+    // タグを名前順（昇順）でソート
     return Array.from(tagCountMap.entries())
-      .sort((a, b) => {
-        if (b[1] !== a[1]) {
-          return b[1] - a[1]; // 件数の降順
-        }
-        return a[0].localeCompare(b[0]); // 名前の昇順
-      })
+      .sort((a, b) => a[0].localeCompare(b[0])) // 名前の昇順
       .map(([tagName]) => tagName);
-  }, [allTags, allProjects, qiitaArticles]);
+  }, [allTags, allProjects]);
 
   // 使用中の工程一覧を取得
   const usedRoles = useMemo(() => {
@@ -700,12 +697,19 @@ export default function ProjectsPage() {
                     );
                   } else {
                     const article = item.data;
+                    const handleQiitaClick = (e: React.MouseEvent) => {
+                      if (isDemoMode) {
+                        e.preventDefault();
+                        setShowLoginModal(true);
+                      }
+                    };
                     return (
                       <a
                         key={`qiita-${article.id}`}
                         href={article.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={handleQiitaClick}
                         className={`project-card border-l-4 border-l-[#55c500] slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''}`}
                       >
                         <div className="flex items-start justify-between">
@@ -743,14 +747,21 @@ export default function ProjectsPage() {
 
                         {/* Tags */}
                         <div className="mt-3 flex flex-wrap gap-2">
-                          {article.tags.map((tag) => (
-                            <span
-                              key={tag.name}
-                              className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 tag-bounce"
-                            >
-                              {tag.name}
-                            </span>
-                          ))}
+                          {article.tags.map((tag) => {
+                            const color = tagColorMap.get(tag.name.toLowerCase()) || '#6B7280';
+                            return (
+                              <span
+                                key={tag.name}
+                                className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium tag-bounce"
+                                style={{
+                                  backgroundColor: `${color}20`,
+                                  color: color
+                                }}
+                              >
+                                {tag.name}
+                              </span>
+                            );
+                          })}
                         </div>
                       </a>
                     );

@@ -211,3 +211,30 @@ export const demoRoles: Role[] = [
   { id: 5, name: "テスト", display_order: 5, created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
   { id: 6, name: "保守運用", display_order: 6, created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
 ];
+
+// デモ用のタグマスターデータ（データベースと同じ色を使用）
+export const demoTags = [
+  { id: "1", name: "React", category: "Frontend", color: "#06B6D4", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "2", name: "Next.js", category: "Frontend", color: "#000000", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "3", name: "TypeScript", category: "Frontend", color: "#3B82F6", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "4", name: "Tailwind CSS", category: "Frontend", color: "#06B6D4", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "5", name: "Node.js", category: "Backend", color: "#84CC16", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "6", name: "Express", category: "Backend", color: "#1F2937", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "7", name: "PostgreSQL", category: "Database", color: "#3B82F6", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "8", name: "Vue.js", category: "Frontend", color: "#10B981", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "9", name: "React Native", category: "Mobile", color: "#06B6D4", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "10", name: "Firebase", category: "Database", color: "#F59E0B", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "11", name: "Redux", category: "Frontend", color: "#7C3AED", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "12", name: "AWS", category: "Cloud", color: "#FF9900", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "13", name: "Docker", category: "DevOps", color: "#2563EB", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "14", name: "Terraform", category: "DevOps", color: "#7C3AED", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "15", name: "GitHub Actions", category: "DevOps", color: "#1D4ED8", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "16", name: "Python", category: "Language", color: "#3B82F6", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "17", name: "Apache Spark", category: "Backend", color: "#E25A1C", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "18", name: "BigQuery", category: "Database", color: "#4285F4", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "19", name: "Tableau", category: "Backend", color: "#E97627", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "20", name: "Supabase", category: "Database", color: "#10B981", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "21", name: "CSS", category: "Frontend", color: "#2563EB", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "22", name: "Lambda", category: "Cloud", color: "#FF9900", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+  { id: "23", name: "DevOps", category: "DevOps", color: "#3B82F6", created_at: "2022-01-01T00:00:00Z", updated_at: "2022-01-01T00:00:00Z" },
+];
