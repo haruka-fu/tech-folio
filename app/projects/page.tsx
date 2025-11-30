@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role, Tag } from "@/lib/supabase";
-import { demoProjects, demoQiitaArticles } from "@/lib/demo-data";
+import { demoProjects, demoQiitaArticles, demoRoles } from "@/lib/demo-data";
 
 const supabase = createClient();
 
@@ -79,6 +79,10 @@ export default function ProjectsPage() {
         if (!user) {
           setIsDemoMode(true);
           setAllProjects(demoProjects);
+          setAllRoles(demoRoles);
+          setQiitaArticles(demoQiitaArticles);
+          setHasQiitaToken(true);
+          setQiitaLoading(false);
           setIsLoading(false);
           return;
         }
@@ -164,15 +168,12 @@ export default function ProjectsPage() {
   // Qiita記事を取得
   useEffect(() => {
     const loadQiitaArticles = async () => {
+      // デモモードの場合は何もしない（loadProjectsで既に設定済み）
+      if (isDemoMode) {
+        return;
+      }
       setQiitaLoading(true);
       try {
-        // デモモードの場合はデモデータを使用
-        if (isDemoMode) {
-          setQiitaArticles(demoQiitaArticles);
-          setHasQiitaToken(true); // デモモードでは連携済みとして扱う
-          setQiitaLoading(false);
-          return;
-        }
 
         const response = await fetch("/api/qiita/articles");
         const data = await response.json();

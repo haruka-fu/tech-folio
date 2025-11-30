@@ -195,3 +195,13 @@ export const demoProfile = {
   created_at: "2022-01-01T00:00:00Z",
   updated_at: "2024-11-30T00:00:00Z",
 };
+
+// デモ用のロールデータ
+export const demoRoles = [
+  { id: 1, name: "要件定義", display_order: 1 },
+  { id: 2, name: "基本設計", display_order: 2 },
+  { id: 3, name: "詳細設計", display_order: 3 },
+  { id: 4, name: "実装", display_order: 4 },
+  { id: 5, name: "テスト", display_order: 5 },
+  { id: 6, name: "保守運用", display_order: 6 },
+];
