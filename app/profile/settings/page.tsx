@@ -89,7 +89,15 @@ export default function ProfileSettingsPage() {
       }
 
       // プロフィールを更新
-      const updateData: any = {
+      const updateData: {
+        display_name: string;
+        bio: string | null;
+        twitter_url: string | null;
+        github_url: string | null;
+        qiita_url: string | null;
+        other_url: string | null;
+        avatar_url: string | null;
+      } = {
         display_name: formData.display_name,
         bio: formData.bio || null,
         twitter_url: formData.twitter_url || null,

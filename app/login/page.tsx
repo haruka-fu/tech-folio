@@ -1,17 +1,21 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
 // useSearchParams()を使用するコンポーネントを分離
-function ErrorDisplay({ onError }: { onError: (error: string | null) => void }) {
+function ErrorDisplay({
+  onError,
+}: {
+  onError: (error: string | null) => void;
+}) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const errorParam = searchParams.get('error');
+    const errorParam = searchParams.get("error");
     if (errorParam) {
       onError(decodeURIComponent(errorParam));
     }
@@ -23,7 +27,6 @@ function ErrorDisplay({ onError }: { onError: (error: string | null) => void }) 
 function LoginPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleGoogleLogin = async () => {
     try {
@@ -34,10 +37,10 @@ function LoginPageContent() {
       const getRedirectURL = () => {
         let url =
           process.env.NEXT_PUBLIC_SITE_URL ?? // 本番環境のサイトURL
-          (typeof window !== 'undefined' ? window.location.origin : ''); // フォールバック
+          (typeof window !== "undefined" ? window.location.origin : ""); // フォールバック
 
         // httpsプレフィックスを確認（localhostを除く）
-        if (url && !url.startsWith('http')) {
+        if (url && !url.startsWith("http")) {
           url = `https://${url}`;
         }
 
@@ -46,18 +49,19 @@ function LoginPageContent() {
 
       const redirectUrl = `${getRedirectURL()}/auth/callback`;
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
         options: {
           redirectTo: redirectUrl,
         },
       });
 
       if (error) throw error;
-
     } catch (error) {
-      console.error('Google login error:', error);
-      setError(error instanceof Error ? error.message : 'ログインに失敗しました');
+      console.error("Google login error:", error);
+      setError(
+        error instanceof Error ? error.message : "ログインに失敗しました"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +74,7 @@ function LoginPageContent() {
         <ErrorDisplay onError={setError} />
       </Suspense>
 
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#f8f9fa] to-[#e9ecef] px-4">
+      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-[#f8f9fa] to-[#e9ecef] px-4">
         <div className="w-full max-w-md">
           {/* ロゴとタイトル */}
           <div className="mb-8 text-center">
@@ -170,11 +174,13 @@ function LoginPageContent() {
 // メインのエクスポートコンポーネント
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#f8f9fa] to-[#e9ecef]">
-        <div className="size-8 animate-spin rounded-full border-4 border-[#2b6cee] border-t-transparent" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-[#f8f9fa] to-[#e9ecef]">
+          <div className="size-8 animate-spin rounded-full border-4 border-[#2b6cee] border-t-transparent" />
+        </div>
+      }
+    >
       <LoginPageContent />
     </Suspense>
   );

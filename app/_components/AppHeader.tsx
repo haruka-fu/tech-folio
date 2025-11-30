@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NewProjectModal from "./NewProjectModal";
 import { createClient } from "@/lib/supabase/client";
@@ -14,7 +14,6 @@ export default function AppHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const pathname = usePathname();
   const router = useRouter();
 
   // プロフィール情報を取得
