@@ -75,7 +75,7 @@ export default function AppHeader() {
                 <h2 className="text-lg font-semibold">TechFolio</h2>
               </Link>
             </div>
-            <div className="hidden items-center gap-6 text-sm text-[#6b7280] md:flex">
+            <div className="hidden items-center gap-6 text-base text-[#6b7280] md:flex">
               <Link href="/projects" className="underline-center transition-colors hover:text-[#111827]">
                 アクティビティ
               </Link>
