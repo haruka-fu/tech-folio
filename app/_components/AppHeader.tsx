@@ -72,7 +72,7 @@ export default function AppHeader() {
               </Link>
             </div>
             <div className="hidden items-center gap-6 text-sm text-[#6b7280] md:flex">
-              <Link href="/" className="underline-center transition-colors hover:text-[#111827]">
+              <Link href="/projects" className="underline-center transition-colors hover:text-[#111827]">
                 アクティビティ
               </Link>
               <Link href="/profile" className="underline-center transition-colors hover:text-[#111827]">
