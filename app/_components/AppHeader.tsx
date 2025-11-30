@@ -13,6 +13,7 @@ export default function AppHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -32,6 +33,7 @@ export default function AppHeader() {
 
         if (profileData) {
           setProfile(profileData);
+        setIsLoggedIn(true);
         }
       } catch (error) {
         console.error('Failed to load profile:', error);
@@ -80,66 +82,78 @@ export default function AppHeader() {
               </Link>
             </div>
             <div className="flex items-center gap-3 w-[284px] justify-end">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex btn-shimmer btn-glow"
-              >
-                新規プロジェクト追加
-              </button>
-              <div className="relative shrink-0">
-                {profile?.avatar_url ? (
+              {isLoggedIn ? (
+                <>
                   <button
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee] hover-scale"
-                    style={{
-                      backgroundImage: `url("${profile.avatar_url}")`,
-                    }}
-                  />
-                ) : (
-                  <button
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="size-10 aspect-square cursor-pointer rounded-full bg-slate-200 border-2 border-slate-300 transition-all hover:border-[#2b6cee] hover-scale flex items-center justify-center"
+                    onClick={() => setIsModalOpen(true)}
+                    className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex btn-shimmer btn-glow"
                   >
-                    <span className="material-symbols-outlined text-slate-500">
-                      person
-                    </span>
+                    新規プロジェクト追加
                   </button>
-                )}
-                {isMenuOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setIsMenuOpen(false)}
-                    />
-                    <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-lg scale-in">
-                      <div className="py-1">
-                        <Link
-                          href="/profile/settings"
+                  <div className="relative shrink-0">
+                    {profile?.avatar_url ? (
+                      <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="size-10 aspect-square cursor-pointer rounded-full bg-cover bg-center bg-no-repeat border-2 border-slate-300 transition-all hover:border-[#2b6cee] hover-scale"
+                        style={{
+                          backgroundImage: `url("${profile.avatar_url}")`,
+                        }}
+                      />
+                    ) : (
+                      <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="size-10 aspect-square cursor-pointer rounded-full bg-slate-200 border-2 border-slate-300 transition-all hover:border-[#2b6cee] hover-scale flex items-center justify-center"
+                      >
+                        <span className="material-symbols-outlined text-slate-500">
+                          person
+                        </span>
+                      </button>
+                    )}
+                    {isMenuOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-10"
                           onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-xl text-scale">
-                            settings
-                          </span>
-                          設定
-                        </Link>
-                        <button
-                          onClick={() => {
-                            setIsMenuOpen(false);
-                            handleLogout();
-                          }}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-xl text-scale">
-                            logout
-                          </span>
-                          ログアウト
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
+                        />
+                        <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-lg scale-in">
+                          <div className="py-1">
+                            <Link
+                              href="/profile/settings"
+                              onClick={() => setIsMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-xl text-scale">
+                                settings
+                              </span>
+                              設定
+                            </Link>
+                            <button
+                              onClick={() => {
+                                setIsMenuOpen(false);
+                                handleLogout();
+                              }}
+                              className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-xl text-scale">
+                                logout
+                              </span>
+                              ログアウト
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#2b6cee] px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-[#2357c9]"
+                >
+                  <span className="material-symbols-outlined text-lg">login</span>
+                  ログイン
+                </Link>
+              )}
             </div>
           </div>
         </div>
