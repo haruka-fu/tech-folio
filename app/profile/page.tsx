@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Tag, Profile } from "@/lib/supabase";
+import { demoProfile, demoProjects } from "@/lib/demo-data";
 
 const supabase = createClient();
 
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   const [roleStats, setRoleStats] = useState<RoleStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeView, setActiveView] = useState<"chart" | "grid">("chart");
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   // プロジェクトとスキル統計をロード
   useEffect(() => {
@@ -32,8 +34,54 @@ export default function ProfilePage() {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
-          // ログインしていない場合はログインページにリダイレクト
-          window.location.href = '/login';
+          // ログインしていない場合はデモモードで表示
+          setIsDemoMode(true);
+          setProfile(demoProfile);
+          
+          // デモプロジェクトからスキル統計を計算
+          const tagCounts = new Map<string, { count: number; tag: Tag }>();
+          const roleCounts = new Map<string, number>();
+          
+          demoProjects.forEach(project => {
+            // タグをカウント
+            project.tags?.forEach(tag => {
+              const existing = tagCounts.get(tag.name);
+              if (existing) {
+                existing.count++;
+              } else {
+                tagCounts.set(tag.name, { count: 1, tag });
+              }
+            });
+            
+            // ロールをカウント
+            project.role_names?.forEach(roleName => {
+              const count = roleCounts.get(roleName) || 0;
+              roleCounts.set(roleName, count + 1);
+            });
+          });
+          
+          // スキル統計を作成（トップ10）
+          const stats: SkillStat[] = Array.from(tagCounts.entries())
+            .map(([tagName, { count, tag }]) => ({
+              tagName,
+              usageCount: count,
+              tag,
+            }))
+            .sort((a, b) => b.usageCount - a.usageCount)
+            .slice(0, 10);
+          
+          setSkillStats(stats);
+          
+          // ロール統計を作成
+          const roleStatsData: RoleStat[] = Array.from(roleCounts.entries())
+            .map(([roleName, count]) => ({
+              roleName,
+              count,
+            }))
+            .filter(stat => stat.count > 0);
+          
+          setRoleStats(roleStatsData);
+          setIsLoading(false);
           return;
         }
 
@@ -161,6 +209,7 @@ export default function ProfilePage() {
           isLoading={isLoading}
           activeView={activeView}
           setActiveView={setActiveView}
+          isDemoMode={isDemoMode}
         />
       </main>
     </div>
@@ -168,6 +217,7 @@ export default function ProfilePage() {
 }
 
 interface ViewProps {
+  isDemoMode: boolean;
   profile: Profile | null;
   skillStats: SkillStat[];
   roleStats: RoleStat[];
@@ -176,7 +226,7 @@ interface ViewProps {
   setActiveView: (view: "chart" | "grid") => void;
 }
 
-function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, setActiveView }: ViewProps) {
+function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, setActiveView, isDemoMode }: ViewProps) {
   const maxUsageCount = Math.max(...skillStats.map((s) => s.usageCount), 1);
 
   return (
@@ -190,6 +240,7 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
           プロジェクト全体でのスキル統計を表示します。
         </p>
       </div>
+{/* デモモードバナー */}      {isDemoMode && (        <div className="rounded-lg border border-[#f59e0b] bg-[#fffbeb] p-4 flex items-start gap-3">          <span className="material-symbols-outlined text-[#f59e0b] text-2xl shrink-0">            info          </span>          <div className="flex-1">            <p className="text-sm font-medium text-[#92400e] mb-1">              デモモード            </p>            <p className="text-sm text-[#92400e]">              これはサンプルデータです。実際のスキル統計を管理するには、              <a href="/login" className="underline font-medium hover:text-[#78350f]">                ログイン              </a>              してください。            </p>          </div>        </div>      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* 左側: プロフィール情報 */}
