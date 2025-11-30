@@ -7,6 +7,7 @@ import { demoProfile, demoProjects } from "@/lib/demo-data";
 import type { SkillStat, RoleStat } from "@/lib/types/profile";
 import { calculateSkillStats, calculateRoleStats } from "@/lib/utils/stats";
 import ProfileCard from "./_components/ProfileCard";
+import RoleStatsCard from "./_components/RoleStatsCard";
 
 const supabase = createClient();
 
@@ -201,30 +202,7 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
         {/* 左側: プロフィール情報 */}
         <div className="lg:col-span-1 flex flex-col gap-8">
           <ProfileCard profile={profile} isLoading={isLoading} />
-
-          {/* 担当工程 */}
-          {!isLoading && roleStats.length > 0 && (
-            <div className="bg-white p-6 rounded-xl border border-slate-200">
-              <h3 className="text-slate-900 text-lg font-bold leading-tight mb-4">
-                担当工程
-              </h3>
-              <div className="space-y-3">
-                {roleStats.map((stat) => (
-                  <div
-                    key={stat.roleName}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="text-slate-600 text-sm">
-                      {stat.roleName}
-                    </span>
-                    <span className="text-slate-900 text-sm font-semibold bg-slate-100 px-2.5 py-0.5 rounded-full">
-                      {stat.count}件
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <RoleStatsCard roleStats={roleStats} isLoading={isLoading} />
         </div>
 
         {/* 右側: スキル表示 */}
