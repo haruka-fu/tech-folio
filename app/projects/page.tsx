@@ -165,16 +165,16 @@ export default function ProjectsPage() {
     loadProjects();
   }, []);
 
-  // Qiita記事を取得
+  // Qiita記事を取得（ログイン済みの場合のみ）
   useEffect(() => {
     const loadQiitaArticles = async () => {
-      // デモモードの場合は何もしない（loadProjectsで既に設定済み）
-      if (isDemoMode) {
+      // デモモードまたは初期ロード中の場合は何もしない
+      if (isDemoMode || isLoading) {
         return;
       }
+
       setQiitaLoading(true);
       try {
-
         const response = await fetch("/api/qiita/articles");
         const data = await response.json();
         setQiitaArticles(data.articles || []);
@@ -187,7 +187,7 @@ export default function ProjectsPage() {
     };
 
     loadQiitaArticles();
-  }, [isDemoMode]);
+  }, [isDemoMode, isLoading]);
 
   // DBの全タグを取得し、使用件数順にソート
   const availableTags = useMemo(() => {
