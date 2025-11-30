@@ -40,6 +40,7 @@ export default function ProjectsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // ドロップダウン表示状態
   const [showTagDropdown, setShowTagDropdown] = useState(false);
@@ -629,10 +630,17 @@ export default function ProjectsPage() {
                 {displayedItems.map((item, index) => {
                   if (item.type === "project") {
                     const project = item.data;
+                    const handleClick = (e: React.MouseEvent) => {
+                      if (isDemoMode) {
+                        e.preventDefault();
+                        setShowLoginModal(true);
+                      }
+                    };
                     return (
                       <Link
                         key={`project-${project.id}`}
                         href={`/projects/${project.id}`}
+                        onClick={handleClick}
                         className={`project-card slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''}`}
                       >
                         <div className="flex items-start justify-between">
@@ -779,6 +787,40 @@ export default function ProjectsPage() {
       >
         <span className="material-symbols-outlined text-3xl">arrow_upward</span>
       </a>
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <button
+              onClick={() => setShowLoginModal(false)}
+              className="absolute right-4 top-4 text-slate-400 hover:text-slate-600"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <div className="flex flex-col items-center text-center">
+              <span className="material-symbols-outlined mb-4 text-6xl text-[#2b6cee]">
+                lock
+              </span>
+              <h3 className="mb-2 text-xl font-bold text-slate-900">
+                ログインが必要です
+              </h3>
+              <p className="mb-6 text-sm text-slate-600">
+                プロジェクトの詳細を表示するには、ログインしてください。
+                <br />
+                現在はデモモードで閲覧しています。
+              </p>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#2b6cee] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#2357c9]"
+              >
+                <span className="material-symbols-outlined text-lg">login</span>
+                ログインする
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
