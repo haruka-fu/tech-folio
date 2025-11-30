@@ -84,7 +84,6 @@ export default function ProfilePage() {
           setIsLoading(false);
           return;
         }
-        }
 
         // プロフィール情報を取得
         const { data: profileData, error: profileError } = await supabase
