@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role, Tag } from "@/lib/supabase";
 import { demoProjects, demoQiitaArticles, demoRoles, demoTags } from "@/lib/demo-data";
 import type { QiitaArticle, TimelineItem, FilterTab } from "@/lib/types/project";
 import { createTagColorMap } from "@/lib/utils/tags";
-import ProjectCard from "@/app/projects/_components/ProjectCard";
-import QiitaCard from "@/app/projects/_components/QiitaCard";
+import PageHeader from "@/app/projects/_components/PageHeader";
+import DemoModeBanner from "@/app/projects/_components/DemoModeBanner";
+import TabFilter from "@/app/projects/_components/TabFilter";
+import SearchAndFilters from "@/app/projects/_components/SearchAndFilters";
+import TimelineList from "@/app/projects/_components/TimelineList";
+import LoginModal from "@/app/projects/_components/LoginModal";
 
 const supabase = createClient();
 
@@ -37,23 +40,6 @@ export default function ProjectsPage() {
   const [hasQiitaToken, setHasQiitaToken] = useState(false);
 
   const observerTarget = useRef<HTMLDivElement>(null);
-  const tagDropdownRef = useRef<HTMLDivElement>(null);
-  const roleDropdownRef = useRef<HTMLDivElement>(null);
-
-  // ドロップダウン外クリックで閉じる
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (tagDropdownRef.current && !tagDropdownRef.current.contains(event.target as Node)) {
-        setShowTagDropdown(false);
-      }
-      if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target as Node)) {
-        setShowRoleDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // Load projects from Supabase
   useEffect(() => {
@@ -318,246 +304,36 @@ export default function ProjectsPage() {
 
       <main className="mx-auto w-full max-w-4xl p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col gap-6">
-          {/* Header */}
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-3xl font-black leading-tight tracking-[-0.033em] text-[#1f2937] sm:text-4xl">
-                アクティビティ
-              </h1>
-              <p className="text-base font-normal leading-normal text-[#6b7280]">
-                プロジェクトとQiita記事を時系列で表示します。
-              </p>
-            </div>
-            {!hasQiitaToken && !qiitaLoading && !isDemoMode && (
-              <Link
-                href="/profile/settings?tab=qiita"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#55c500] px-4 py-2 text-sm font-medium text-white hover:bg-[#4ab000] btn-shimmer btn-glow"
-              >
-                Qiitaと連携する
-              </Link>
-            )}
-          </div>
+          <PageHeader
+            hasQiitaToken={hasQiitaToken}
+            qiitaLoading={qiitaLoading}
+            isDemoMode={isDemoMode}
+          />
 
+          {isDemoMode && <DemoModeBanner />}
 
-          {/* Demo Mode Banner */}
-          {isDemoMode && (
-            <div className="rounded-lg border border-[#f59e0b] bg-[#fffbeb] p-4">
-              <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-2xl text-[#f59e0b]">
-                  info
-                </span>
-                <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-[#92400e]">
-                    デモモードで表示中
-                  </h3>
-                  <p className="mt-1 text-sm text-[#78350f]">
-                    これはサンプルデータです。実際のプロジェクトを管理するには、ログインしてください。
-                  </p>
-                  <Link
-                    href="/login"
-                    className="mt-3 inline-flex items-center gap-2 rounded-lg bg-[#f59e0b] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[#d97706]"
-                  >
-                    <span className="material-symbols-outlined text-lg">login</span>
-                    ログインして始める
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
-          {/* Tab Filter */}
-          <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
-            <button
-              onClick={() => setActiveTab("all")}
-              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
-                activeTab === "all"
-                  ? "bg-white text-[#1f2937] shadow-sm scale-in"
-                  : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
-              }`}
-            >
-              すべて
-              <span className="ml-1 text-xs text-[#9ca3af]">
-                ({projectCount + qiitaCount})
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab("project")}
-              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
-                activeTab === "project"
-                  ? "bg-white text-[#1f2937] shadow-sm scale-in"
-                  : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
-              }`}
-            >
-              案件
-              <span className="ml-1 text-xs text-[#9ca3af]">
-                ({projectCount})
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab("qiita")}
-              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
-                activeTab === "qiita"
-                  ? "bg-white text-[#55c500] shadow-sm scale-in"
-                  : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
-              }`}
-            >
-              Qiita
-              <span className="ml-1 text-xs text-[#9ca3af]">
-                ({qiitaCount})
-              </span>
-            </button>
-          </div>
+          <TabFilter
+            activeTab={activeTab}
+            projectCount={projectCount}
+            qiitaCount={qiitaCount}
+            onTabChange={setActiveTab}
+          />
 
-          {/* Search and Filters */}
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="grow">
-              <label className="flex h-12 w-full min-w-40 flex-col">
-                <div className="flex h-full w-full flex-1 items-stretch rounded-lg">
-                  <div className="flex items-center justify-center rounded-l-lg border-y border-l border-[#e5e7eb] bg-gray-50 pl-4 text-[#6b7280]">
-                    <span className="material-symbols-outlined text-2xl">
-                      search
-                    </span>
-                  </div>
-                  <input
-                    className="form-input flex h-full w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg rounded-l-none border border-l-0 border-[#e5e7eb] bg-white px-4 pl-2 text-base font-normal leading-normal text-[#1f2937] placeholder:text-[#6b7280] focus:border-[#2b6cee] focus:outline-0 focus:ring-2 focus:ring-[#2b6cee]"
-                    placeholder="キーワードで検索..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </label>
-            </div>
-
-            <div className="flex gap-3 overflow-visible pb-2">
-              {/* Tag Filter Dropdown */}
-              <div className="relative" ref={tagDropdownRef}>
-                <button
-                  onClick={() => {
-                    setShowTagDropdown(!showTagDropdown);
-                    setShowRoleDropdown(false);
-                  }}
-                  className={`flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg border px-4 transition-colors ${
-                    selectedTags.length > 0
-                      ? "border-[#2b6cee] bg-[#2b6cee]/5 text-[#2b6cee]"
-                      : "border-[#e5e7eb] bg-white hover:bg-gray-50"
-                  }`}
-                >
-                  <p className="text-sm font-medium leading-normal">
-                    {selectedTags.length > 0 ? `技術タグ (${selectedTags.length})` : "技術タグ"}
-                  </p>
-                  <span className="material-symbols-outlined text-xl">
-                    {showTagDropdown ? "expand_less" : "expand_more"}
-                  </span>
-                </button>
-                {selectedTags.length > 0 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedTags([]);
-                    }}
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#2b6cee] text-white text-xs"
-                  >
-                    ×
-                  </button>
-                )}
-                {showTagDropdown && (
-                  <div className="absolute left-0 top-14 z-20 max-h-64 w-56 overflow-y-auto rounded-lg border border-[#e5e7eb] bg-white shadow-lg">
-                    <div className="p-2">
-                      {availableTags.length === 0 ? (
-                        <p className="px-3 py-2 text-sm text-[#6b7280]">タグがありません</p>
-                      ) : (
-                        availableTags.map((tag) => {
-                          const isSelected = selectedTags.includes(tag);
-                          return (
-                            <button
-                              key={tag}
-                              onClick={() => {
-                                if (isSelected) {
-                                  setSelectedTags(selectedTags.filter(t => t !== tag));
-                                } else {
-                                  setSelectedTags([...selectedTags, tag]);
-                                }
-                              }}
-                              className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors ${
-                                isSelected
-                                  ? "bg-[#2b6cee]/10 text-[#2b6cee]"
-                                  : "text-[#1f2937] hover:bg-gray-100"
-                              }`}
-                            >
-                              <span className={`material-symbols-outlined text-lg ${isSelected ? "text-[#2b6cee]" : "text-gray-300"}`}>
-                                {isSelected ? "check_box" : "check_box_outline_blank"}
-                              </span>
-                              {tag}
-                            </button>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Role Filter Dropdown (案件タブ or すべてタブのみ) */}
-              {activeTab !== "qiita" && (
-                <div className="relative" ref={roleDropdownRef}>
-                  <button
-                    onClick={() => {
-                      setShowRoleDropdown(!showRoleDropdown);
-                      setShowTagDropdown(false);
-                    }}
-                    className={`flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-lg border px-4 transition-colors ${
-                      selectedRole
-                        ? "border-[#2b6cee] bg-[#2b6cee]/5 text-[#2b6cee]"
-                        : "border-[#e5e7eb] bg-white hover:bg-gray-50"
-                    }`}
-                  >
-                    <p className="text-sm font-medium leading-normal">
-                      {selectedRole || "工程"}
-                    </p>
-                    <span className="material-symbols-outlined text-xl">
-                      {showRoleDropdown ? "expand_less" : "expand_more"}
-                    </span>
-                  </button>
-                  {selectedRole && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedRole(null);
-                      }}
-                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#2b6cee] text-white text-xs"
-                    >
-                      ×
-                    </button>
-                  )}
-                  {showRoleDropdown && (
-                    <div className="absolute left-0 top-14 z-20 max-h-64 w-48 overflow-y-auto rounded-lg border border-[#e5e7eb] bg-white shadow-lg">
-                      <div className="p-2">
-                        {usedRoles.length === 0 ? (
-                          <p className="px-3 py-2 text-sm text-[#6b7280]">工程がありません</p>
-                        ) : (
-                          usedRoles.map((role) => (
-                            <button
-                              key={role.id}
-                              onClick={() => {
-                                setSelectedRole(role.name);
-                                setShowRoleDropdown(false);
-                              }}
-                              className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
-                                selectedRole === role.name
-                                  ? "bg-[#2b6cee]/10 text-[#2b6cee]"
-                                  : "text-[#1f2937] hover:bg-gray-100"
-                              }`}
-                            >
-                              {role.name}
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          <SearchAndFilters
+            searchQuery={searchQuery}
+            selectedTags={selectedTags}
+            selectedRole={selectedRole}
+            availableTags={availableTags}
+            usedRoles={usedRoles}
+            activeTab={activeTab}
+            showTagDropdown={showTagDropdown}
+            showRoleDropdown={showRoleDropdown}
+            onSearchChange={setSearchQuery}
+            onTagsChange={setSelectedTags}
+            onRoleChange={setSelectedRole}
+            onTagDropdownToggle={setShowTagDropdown}
+            onRoleDropdownToggle={setShowRoleDropdown}
+          />
 
           {/* Results Count */}
           {!bothLoading && (
@@ -571,63 +347,15 @@ export default function ProjectsPage() {
 
           {/* Timeline Items */}
           <div className="flex flex-col gap-4">
-            {bothLoading ? (
-              <div className="flex justify-center py-12">
-                <div className="spinner"></div>
-              </div>
-            ) : timelineItems.length === 0 ? (
-              <div className="rounded-lg border border-[#e5e7eb] bg-white p-8 text-center">
-                <span className="material-symbols-outlined mb-2 text-6xl text-[#6b7280]">
-                  folder_open
-                </span>
-                <p className="text-lg font-medium text-[#1f2937]">
-                  アイテムが見つかりませんでした
-                </p>
-                <p className="mt-1 text-sm text-[#6b7280]">
-                  検索条件を変更してください
-                </p>
-              </div>
-            ) : (
-              <>
-                {displayedItems.map((item, index) => {
-                  if (item.type === "project") {
-                    return (
-                      <ProjectCard
-                        key={`project-${item.data.id}`}
-                        project={item.data}
-                        index={index}
-                        isDemoMode={isDemoMode}
-                        onDemoClick={() => setShowLoginModal(true)}
-                      />
-                    );
-                  } else {
-                    return (
-                      <QiitaCard
-                        key={`qiita-${item.data.id}`}
-                        article={item.data}
-                        index={index}
-                        isDemoMode={isDemoMode}
-                        tagColorMap={tagColorMap}
-                        onDemoClick={() => setShowLoginModal(true)}
-                      />
-                    );
-                  }
-                })}
-
-                {/* Infinite Scroll Trigger */}
-                {hasMore && (
-                  <div ref={observerTarget} className="flex justify-center py-8">
-                    <div className="spinner"></div>
-                  </div>
-                )}
-
-                {!hasMore && displayedItems.length > 0 && (
-                  <div className="py-8 text-center text-sm text-[#6b7280]">
-                    すべてのアイテムを表示しました
-                  </div>
-                )}
-              </>
-            )}
+            <TimelineList
+              items={displayedItems}
+              isLoading={bothLoading}
+              hasMore={hasMore}
+              isDemoMode={isDemoMode}
+              tagColorMap={tagColorMap}
+              observerTarget={observerTarget}
+              onDemoClick={() => setShowLoginModal(true)}
+            />
           </div>
 
           {/* Mobile Add Button */}
@@ -645,39 +373,10 @@ export default function ProjectsPage() {
         <span className="material-symbols-outlined text-3xl">arrow_upward</span>
       </a>
 
-      {/* Login Modal */}
-      {showLoginModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <button
-              onClick={() => setShowLoginModal(false)}
-              className="absolute right-4 top-4 text-slate-400 hover:text-slate-600"
-            >
-              <span className="material-symbols-outlined">close</span>
-            </button>
-            <div className="flex flex-col items-center text-center">
-              <span className="material-symbols-outlined mb-4 text-6xl text-[#2b6cee]">
-                lock
-              </span>
-              <h3 className="mb-2 text-xl font-bold text-slate-900">
-                ログインが必要です
-              </h3>
-              <p className="mb-6 text-sm text-slate-600">
-                プロジェクトの詳細を表示するには、ログインしてください。
-                <br />
-                現在はデモモードで閲覧しています。
-              </p>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#2b6cee] px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-[#2357c9]"
-              >
-                <span className="material-symbols-outlined text-lg">login</span>
-                ログインする
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
   );
 }
