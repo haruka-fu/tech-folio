@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role } from "@/lib/supabase";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { formatPeriod } from "@/lib/utils/format";
 
 const supabase = createClient();
 
@@ -80,25 +81,6 @@ export default function ProjectDetailPage() {
 
     loadProject();
   }, [params.id, isAuthLoading]);
-
-  const formatPeriod = (
-    start: string,
-    end: string | null,
-    isCurrent: boolean
-  ) => {
-    const formatMonth = (dateStr: string) => {
-      const [year, month] = dateStr.split("-");
-      return `${year}年${month}月`;
-    };
-
-    if (isCurrent) {
-      return `${formatMonth(start)} 〜 現在`;
-    }
-
-    return end
-      ? `${formatMonth(start)} 〜 ${formatMonth(end)}`
-      : formatMonth(start);
-  };
 
   if (isLoading) {
     return (
