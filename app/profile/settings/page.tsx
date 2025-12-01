@@ -21,6 +21,8 @@ export default function ProfileSettingsPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     display_name: "",
     bio: "",
@@ -52,6 +54,9 @@ export default function ProfileSettingsPage() {
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string);
       };
+      reader.onerror = () => {
+        setError('ファイルの読み込みに失敗しました');
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -62,13 +67,15 @@ export default function ProfileSettingsPage() {
 
     setIsSaving(true);
     setDisplayNameError(null);
+    setError(null);
+    setSuccessMessage(null);
 
     try {
       let avatarUrl = profile.avatar_url;
 
       // アイコンがアップロードされている場合
       if (avatarFile) {
-        const fileExt = avatarFile.name.split('.').pop();
+        const fileExt = avatarFile.name.split('.').pop() || 'jpg';
         const fileName = `${profile.id}.${fileExt}`;
 
         // Supabase Storageにアップロード
@@ -112,11 +119,15 @@ export default function ProfileSettingsPage() {
 
       if (error) throw error;
 
-      alert('プロフィールを保存しました');
-      window.location.reload();
+      setSuccessMessage('プロフィールを保存しました');
+      setAvatarFile(null);
+      setAvatarPreview(null);
+
+      // 3秒後にメッセージを消す
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       console.error('Save error:', error);
-      alert('保存に失敗しました');
+      setError(error instanceof Error ? error.message : '保存に失敗しました');
     } finally {
       setIsSaving(false);
     }
@@ -141,6 +152,30 @@ export default function ProfileSettingsPage() {
             {activeTab === "profile" && (
               <>
                 <ProfileHeader />
+
+                {/* 成功メッセージ */}
+                {successMessage && (
+                  <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                    <div className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-green-600">
+                        check_circle
+                      </span>
+                      <p className="text-sm text-green-800">{successMessage}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* エラーメッセージ */}
+                {error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <div className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-red-600">
+                        error
+                      </span>
+                      <p className="text-sm text-red-800">{error}</p>
+                    </div>
+                  </div>
+                )}
 
             <div className="flex flex-col gap-8">
               <section className="rounded-xl border border-gray-200 bg-white p-6">
@@ -176,7 +211,22 @@ export default function ProfileSettingsPage() {
                 <div className="flex flex-col-reverse items-center justify-end gap-3 pt-4 sm:flex-row">
                   <button
                     type="button"
-                    onClick={() => window.location.reload()}
+                    onClick={() => {
+                      if (profile) {
+                        setFormData({
+                          display_name: profile.display_name || "",
+                          bio: profile.bio || "",
+                          twitter_url: profile.twitter_url || "",
+                          github_url: profile.github_url || "",
+                          qiita_url: profile.qiita_url || "",
+                          other_url: profile.other_url || "",
+                        });
+                        setAvatarFile(null);
+                        setAvatarPreview(null);
+                        setError(null);
+                        setSuccessMessage(null);
+                      }
+                    }}
                     disabled={isSaving}
                     className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-white border border-gray-300 text-gray-700 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >

@@ -127,8 +127,6 @@ export default function RegisterPage() {
         throw new Error('ログインしていません');
       }
 
-      console.log('Creating profile for user:', user.id);
-
       // プロフィールが既に存在しないか確認
       const { data: existingProfile } = await supabase
         .from('profiles')
@@ -137,14 +135,13 @@ export default function RegisterPage() {
         .maybeSingle();
 
       if (existingProfile) {
-        console.log('Profile already exists, redirecting...');
         router.push('/projects');
         return;
       }
 
       // ステップ1: プロフィールを作成
       // Google OAuthからアバターURLを取得
-      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+      const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
 
       const profile = await createProfile({
         userId: user.id,
@@ -152,8 +149,6 @@ export default function RegisterPage() {
         email: user.email,
         avatarUrl: avatarUrl,
       });
-
-      console.log('Profile created:', profile);
 
       // ステップ2: 認証プロバイダー情報を登録
       const providerType = user.app_metadata?.provider || 'google';
@@ -163,8 +158,6 @@ export default function RegisterPage() {
         providerUserId: user.id,
         providerEmail: user.email,
       });
-
-      console.log('Auth provider registered:', authProvider);
 
       // ステップ3: 両方のレコードが正しく作成されたか検証
       await verifyRegistration(profile.id);

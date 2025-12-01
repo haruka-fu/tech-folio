@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role, Tag } from "@/lib/supabase";
 import { demoProjects, demoQiitaArticles, demoRoles, demoTags } from "@/lib/demo-data";
@@ -18,6 +19,7 @@ const supabase = createClient();
 const ITEMS_PER_PAGE = 20;
 
 export default function ProjectsPage() {
+  const router = useRouter();
   const [allProjects, setAllProjects] = useState<ProjectWithDetails[]>([]);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [allRoles, setAllRoles] = useState<Role[]>([]);
@@ -72,7 +74,7 @@ export default function ProjectsPage() {
         }
 
         if (!profile) {
-          window.location.href = '/register';
+          router.push('/register');
           return;
         }
 

@@ -119,8 +119,7 @@ export default function NewProjectModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Save to TOON file
-    console.log("New project data:", formData);
+    // TODO: Save to database - implement Supabase integration
     // Reset form and close modal
     setFormData({
       title: "",
