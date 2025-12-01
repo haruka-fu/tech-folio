@@ -188,10 +188,10 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
     <div className="space-y-8">
       {/* ページタイトル */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-black leading-tight tracking-[-0.033em] text-slate-900 sm:text-4xl">
+        <h1 className="text-2xl font-black leading-tight tracking-[-0.033em] text-slate-900 sm:text-3xl md:text-4xl">
           スキル一覧
         </h1>
-        <p className="text-sm text-slate-600">
+        <p className="text-xs text-slate-600 sm:text-sm">
           プロジェクト全体でのスキル統計を表示します。
         </p>
       </div>

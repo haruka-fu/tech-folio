@@ -6,9 +6,9 @@ interface HeroSectionProps {
 
 export default function HeroSection({ isLoggedIn }: HeroSectionProps) {
   return (
-    <section className="mb-16 text-center">
-      <div className="mb-6 flex justify-center">
-        <div className="size-24 text-[#2b6cee]">
+    <section className="mb-12 text-center sm:mb-16">
+      <div className="mb-4 flex justify-center sm:mb-6">
+        <div className="size-16 text-[#2b6cee] sm:size-20 md:size-24">
           <svg
             aria-hidden="true"
             className="text-[#2b6cee]"
@@ -20,13 +20,13 @@ export default function HeroSection({ isLoggedIn }: HeroSectionProps) {
           </svg>
         </div>
       </div>
-      <h1 className="mb-4 text-5xl font-black text-[#1f2937]">Tech Folio</h1>
-      <p className="mb-8 text-xl text-[#6b7280]">
+      <h1 className="mb-3 text-3xl font-black text-[#1f2937] sm:mb-4 sm:text-4xl md:text-5xl">Tech Folio</h1>
+      <p className="mb-6 px-4 text-base text-[#6b7280] sm:mb-8 sm:text-lg md:text-xl">
         あなたのプロジェクトとスキルを一元管理する
         <br />
         ポートフォリオダッシュボード
       </p>
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-col justify-center gap-3 px-4 sm:flex-row sm:gap-4">
         {!isLoggedIn && (
           <Link
             href="/login"

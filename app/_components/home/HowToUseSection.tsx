@@ -1,10 +1,10 @@
 export default function HowToUseSection() {
   return (
-    <section className="mb-16">
-      <h2 className="mb-10 text-center text-3xl font-bold text-[#1f2937]">
+    <section className="mb-12 sm:mb-16">
+      <h2 className="mb-6 text-center text-2xl font-bold text-[#1f2937] sm:mb-8 sm:text-3xl">
         使い方は簡単3ステップ
       </h2>
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-6 sm:gap-8 md:grid-cols-3">
         {/* ステップ1 */}
         <div className="relative">
           <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-linear-to-br from-[#2b6cee] to-[#1e40af] text-2xl font-bold text-white shadow-lg">

@@ -14,10 +14,10 @@ export default function PageHeader({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-black leading-tight tracking-[-0.033em] text-[#1f2937] sm:text-4xl">
+        <h1 className="text-2xl font-black leading-tight tracking-[-0.033em] text-[#1f2937] sm:text-3xl md:text-4xl">
           アクティビティ
         </h1>
-        <p className="text-base font-normal leading-normal text-[#6b7280]">
+        <p className="text-sm font-normal leading-normal text-[#6b7280] sm:text-base">
           プロジェクトとQiita記事を時系列で表示します。
         </p>
       </div>

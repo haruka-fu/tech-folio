@@ -5,8 +5,8 @@ interface ModalHeaderProps {
 
 export default function ModalHeader({ title, onClose }: ModalHeaderProps) {
   return (
-    <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-      <h2 className="text-2xl font-bold text-slate-900 slide-in-left">
+    <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
+      <h2 className="text-lg font-bold text-slate-900 slide-in-left sm:text-xl md:text-2xl">
         {title}
       </h2>
       <button

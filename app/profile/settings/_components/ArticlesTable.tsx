@@ -39,20 +39,20 @@ export default function ArticlesTable({
           記事がありません
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-[#e5e7eb] bg-white shadow-sm">
-          <table className="w-full text-left text-sm text-[#6b7280]">
+        <div className="overflow-x-auto rounded-lg border border-[#e5e7eb] bg-white shadow-sm -mx-4 sm:mx-0">
+          <table className="w-full min-w-[600px] text-left text-sm text-[#6b7280]">
             <thead className="bg-[#f9fafb] text-xs uppercase text-[#1f2937]">
               <tr>
-                <th scope="col" className="whitespace-nowrap px-6 py-3 font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium sm:px-6 sm:py-3">
                   タイトル
                 </th>
-                <th scope="col" className="whitespace-nowrap px-6 py-3 font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 font-medium sm:px-6 sm:py-3">
                   投稿日
                 </th>
-                <th scope="col" className="whitespace-nowrap px-6 py-3 text-center font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 text-center font-medium sm:px-6 sm:py-3">
                   LGTM
                 </th>
-                <th scope="col" className="whitespace-nowrap px-6 py-3 text-center font-medium">
+                <th scope="col" className="whitespace-nowrap px-3 py-2 text-center font-medium sm:px-6 sm:py-3">
                   ストック
                 </th>
               </tr>
@@ -65,7 +65,7 @@ export default function ArticlesTable({
                 >
                   <th
                     scope="row"
-                    className="whitespace-nowrap px-6 py-4 font-medium text-[#1f2937]"
+                    className="whitespace-nowrap px-3 py-3 font-medium text-[#1f2937] sm:px-6 sm:py-4"
                   >
                     <a
                       href={article.url}
@@ -86,13 +86,13 @@ export default function ArticlesTable({
                       ))}
                     </div>
                   </th>
-                  <td className="px-6 py-4">
+                  <td className="px-3 py-3 sm:px-6 sm:py-4">
                     {formatDate(article.created_at)}
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-3 py-3 text-center sm:px-6 sm:py-4">
                     {article.likes_count}
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-3 py-3 text-center sm:px-6 sm:py-4">
                     {article.stocks_count}
                   </td>
                 </tr>

@@ -1,10 +1,10 @@
 export default function FeaturesSection() {
   return (
-    <section className="mb-16">
-      <h2 className="mb-10 text-center text-3xl font-bold text-[#1f2937]">
+    <section className="mb-12 sm:mb-16">
+      <h2 className="mb-6 text-center text-2xl font-bold text-[#1f2937] sm:mb-8 sm:text-3xl">
         主な機能
       </h2>
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-6 sm:gap-8 md:grid-cols-3">
         {/* 機能1: プロジェクト管理 */}
         <div className="rounded-xl border border-[#e5e7eb] bg-white p-6 shadow transition-all hover:shadow-lg">
           <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-[#eff6ff]">

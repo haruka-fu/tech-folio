@@ -36,7 +36,7 @@ export default function RootLayout({
         className={`${notoSansJP.variable} bg-[#f8f9fa] text-[#111827] antialiased`}
       >
         <AppHeader />
-        <main className="mx-auto min-h-screen max-w-[1400px] px-4 py-6 sm:px-8">
+        <main className="mx-auto min-h-screen max-w-[1400px] px-4 py-4 sm:px-6 sm:py-6 md:px-8">
           {children}
         </main>
         <AppFooter />

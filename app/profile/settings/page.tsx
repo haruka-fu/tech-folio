@@ -147,7 +147,31 @@ export default function ProfileSettingsPage() {
       <div className="flex h-full flex-1">
         <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <main className="flex flex-1 flex-col p-6 md:p-10">
+        <main className="flex flex-1 flex-col p-4 sm:p-6 md:p-10">
+          {/* モバイル用タブナビゲーション */}
+          <div className="mb-6 flex gap-2 border-b border-gray-200 md:hidden">
+            <button
+              onClick={() => setActiveTab("profile")}
+              className={`flex-1 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+                activeTab === "profile"
+                  ? "border-[#2b6cee] text-[#2b6cee]"
+                  : "border-transparent text-gray-500"
+              }`}
+            >
+              プロフィール設定
+            </button>
+            <button
+              onClick={() => setActiveTab("qiita")}
+              className={`flex-1 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+                activeTab === "qiita"
+                  ? "border-[#2b6cee] text-[#2b6cee]"
+                  : "border-transparent text-gray-500"
+              }`}
+            >
+              Qiita連携
+            </button>
+          </div>
+
           <div className="mx-auto w-full max-w-4xl">
             {activeTab === "profile" && (
               <>

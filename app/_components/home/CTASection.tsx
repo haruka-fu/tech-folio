@@ -7,9 +7,9 @@ interface CTASectionProps {
 export default function CTASection({ isLoggedIn }: CTASectionProps) {
   if (!isLoggedIn) {
     return (
-      <section className="mb-8 rounded-2xl bg-linear-to-br from-[#2b6cee] to-[#1e40af] p-12 text-center text-white shadow-xl">
-        <h2 className="mb-4 text-3xl font-bold">今すぐ始めましょう</h2>
-        <p className="mb-8 text-lg opacity-90">
+      <section className="mb-8 rounded-2xl bg-linear-to-br from-[#2b6cee] to-[#1e40af] p-6 text-center text-white shadow-xl sm:p-8 md:p-12">
+        <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">今すぐ始めましょう</h2>
+        <p className="mb-6 text-base opacity-90 sm:mb-8 sm:text-lg">
           Googleアカウントで簡単にログインできます
         </p>
         <Link
@@ -24,11 +24,11 @@ export default function CTASection({ isLoggedIn }: CTASectionProps) {
   }
 
   return (
-    <section className="mb-8 rounded-2xl bg-linear-to-br from-[#10b981] to-[#059669] p-12 text-center text-white shadow-xl">
-      <h2 className="mb-4 text-3xl font-bold">
+    <section className="mb-8 rounded-2xl bg-linear-to-br from-[#10b981] to-[#059669] p-6 text-center text-white shadow-xl sm:p-8 md:p-12">
+      <h2 className="mb-3 text-2xl font-bold sm:mb-4 sm:text-3xl">
         プロジェクトを管理しましょう
       </h2>
-      <p className="mb-8 text-lg opacity-90">
+      <p className="mb-6 text-base opacity-90 sm:mb-8 sm:text-lg">
         あなたの技術実績を記録して、スキルを可視化しましょう
       </p>
       <Link

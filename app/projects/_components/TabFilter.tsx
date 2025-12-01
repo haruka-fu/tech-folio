@@ -17,7 +17,7 @@ export default function TabFilter({
     <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
       <button
         onClick={() => onTabChange("all")}
-        className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+        className={`flex-1 rounded-md px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
           activeTab === "all"
             ? "bg-white text-[#1f2937] shadow-sm scale-in"
             : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
@@ -30,7 +30,7 @@ export default function TabFilter({
       </button>
       <button
         onClick={() => onTabChange("project")}
-        className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+        className={`flex-1 rounded-md px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
           activeTab === "project"
             ? "bg-white text-[#1f2937] shadow-sm scale-in"
             : "text-[#6b7280] hover:text-[#1f2937] hover-scale"
@@ -43,7 +43,7 @@ export default function TabFilter({
       </button>
       <button
         onClick={() => onTabChange("qiita")}
-        className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+        className={`flex-1 rounded-md px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
           activeTab === "qiita"
             ? "bg-white text-[#55c500] shadow-sm scale-in"
             : "text-[#6b7280] hover:text-[#1f2937] hover-scale"

@@ -12,6 +12,7 @@ const supabase = createClient();
 export default function AppHeader() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
@@ -74,6 +75,7 @@ export default function AppHeader() {
                 <h2 className="text-lg font-semibold">TechFolio</h2>
               </Link>
             </div>
+            {/* デスクトップナビゲーション */}
             <div className="hidden items-center gap-6 text-base text-[#6b7280] md:flex">
               <Link href="/projects" className="underline-center transition-colors hover:text-[#111827]">
                 アクティビティ
@@ -82,7 +84,19 @@ export default function AppHeader() {
                 スキル一覧
               </Link>
             </div>
-            <div className="flex items-center gap-3 w-[284px] justify-end">
+
+            {/* モバイルハンバーガーメニューボタン */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="flex items-center justify-center p-2 text-[#6b7280] transition-colors hover:text-[#111827] md:hidden"
+              aria-label="メニューを開く"
+            >
+              <span className="material-symbols-outlined text-2xl">
+                {isMobileMenuOpen ? "close" : "menu"}
+              </span>
+            </button>
+
+            <div className="flex items-center gap-3 min-w-0 justify-end md:w-[284px]">
               {isLoggedIn ? (
                 <>
                   <button
@@ -158,6 +172,52 @@ export default function AppHeader() {
             </div>
           </div>
         </div>
+
+        {/* モバイルメニュー */}
+        {isMobileMenuOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-30 bg-black/20 md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <div className="absolute left-0 right-0 top-full z-40 border-b border-[#e5e7eb] bg-white shadow-lg md:hidden slide-in-up">
+              <nav className="flex flex-col px-4 py-3">
+                <Link
+                  href="/projects"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-base text-[#1f2937] transition-colors hover:bg-gray-50"
+                >
+                  <span className="material-symbols-outlined text-xl text-[#6b7280]">
+                    work_history
+                  </span>
+                  アクティビティ
+                </Link>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-base text-[#1f2937] transition-colors hover:bg-gray-50"
+                >
+                  <span className="material-symbols-outlined text-xl text-[#6b7280]">
+                    bar_chart
+                  </span>
+                  スキル一覧
+                </Link>
+                {isLoggedIn && (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsModalOpen(true);
+                    }}
+                    className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-[#2b6cee] px-4 py-3 text-sm font-bold text-white btn-shimmer"
+                  >
+                    <span className="material-symbols-outlined text-lg">add</span>
+                    新規プロジェクト追加
+                  </button>
+                )}
+              </nav>
+            </div>
+          </>
+        )}
       </header>
       <NewProjectModal
         isOpen={isModalOpen}
