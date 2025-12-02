@@ -17,6 +17,7 @@ type SettingsTab = "profile" | "qiita";
 export default function ProfileSettingsPage() {
   const { profile, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -145,9 +146,27 @@ export default function ProfileSettingsPage() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#F7F8FA]">
       <div className="flex h-full flex-1">
-        <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <SettingsSidebar
+          activeTab={activeTab}
+          onTabChange={(tab) => {
+            setActiveTab(tab);
+            setIsSidebarOpen(false);
+          }}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
 
         <main className="flex flex-1 flex-col p-6 md:p-10">
+          {/* トグルボタン（laptop以下で表示） */}
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="fixed left-4 top-4 z-20 flex h-12 w-12 items-center justify-center rounded-lg bg-white border border-gray-200 shadow-md laptop:hidden hover:bg-gray-50 transition-colors"
+            aria-label="メニューを開く"
+          >
+            <span className="material-symbols-outlined text-2xl text-gray-700">
+              menu
+            </span>
+          </button>
           <div className="mx-auto w-full max-w-4xl">
             {activeTab === "profile" && (
               <>
