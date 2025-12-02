@@ -58,7 +58,8 @@ export default function AppHeader() {
       <header className="sticky top-0 z-20 border-b border-[#e5e7eb] bg-white/80 backdrop-blur-sm slide-in-up">
         <div className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 lg:px-10">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            {/* 左側：ロゴ */}
+            <div className="flex items-center gap-4 w-[284px]">
               <Link href="/" className="flex items-center gap-3 text-[#1f2937] hover-scale">
                 <div className="size-6 text-[#2b6cee] hover-scale">
                   <svg
@@ -74,7 +75,8 @@ export default function AppHeader() {
                 <h2 className="text-lg font-semibold">TechFolio</h2>
               </Link>
             </div>
-            <div className="hidden items-center gap-6 text-base text-[#6b7280] md:flex">
+            {/* 中央：ナビゲーション */}
+            <div className="hidden flex-1 items-center justify-center gap-6 text-base text-[#6b7280] md:flex">
               <Link href="/projects" className="underline-center transition-colors hover:text-[#111827]">
                 アクティビティ
               </Link>
@@ -82,12 +84,13 @@ export default function AppHeader() {
                 スキル一覧
               </Link>
             </div>
+            {/* 右側：ボタン */}
             <div className="flex items-center gap-3 w-[284px] justify-end">
               {isLoggedIn ? (
                 <>
                   <button
                     onClick={() => setIsModalOpen(true)}
-                    className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex btn-shimmer btn-glow"
+                    className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white laptop:flex btn-shimmer btn-glow"
                   >
                     新規プロジェクト追加
                   </button>
@@ -116,8 +119,20 @@ export default function AppHeader() {
                           className="fixed inset-0 z-10"
                           onClick={() => setIsMenuOpen(false)}
                         />
-                        <div className="absolute right-0 z-20 mt-2 w-48 rounded-lg border border-slate-200 bg-white shadow-lg scale-in">
+                        <div className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-slate-200 bg-white shadow-lg scale-in">
                           <div className="py-1">
+                            <button
+                              onClick={() => {
+                                setIsMenuOpen(false);
+                                setIsModalOpen(true);
+                              }}
+                              className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors laptop:hidden"
+                            >
+                              <span className="material-symbols-outlined text-xl text-scale">
+                                add_circle
+                              </span>
+                              新規プロジェクト追加
+                            </button>
                             <Link
                               href="/profile/settings"
                               onClick={() => setIsMenuOpen(false)}
