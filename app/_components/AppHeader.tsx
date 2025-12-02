@@ -70,7 +70,7 @@ export default function AppHeader() {
         <div className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 lg:px-10">
           <div className="flex items-center justify-between">
             {/* 左側：ロゴ */}
-            <div className="flex items-center gap-4 w-[284px]">
+            <div className="flex items-center gap-4 w-[284px] laptop:ml-0 ml-16">
               <Link href="/" className="flex items-center gap-3 text-[#1f2937] hover-scale">
                 <div className="size-6 text-[#2b6cee] hover-scale">
                   <svg

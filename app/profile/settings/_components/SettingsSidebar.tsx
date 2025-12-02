@@ -5,14 +5,30 @@ type SettingsTab = "profile" | "qiita";
 interface SettingsSidebarProps {
   activeTab: SettingsTab;
   onTabChange: (tab: SettingsTab) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export default function SettingsSidebar({
   activeTab,
   onTabChange,
+  isOpen,
+  onClose,
 }: SettingsSidebarProps) {
   return (
-    <aside className="flex w-64 flex-col gap-8 border-r border-gray-200 bg-white p-4">
+    <>
+      {/* オーバーレイ（laptop以下で表示） */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 laptop:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* サイドバー */}
+      <aside className={`flex w-64 flex-col gap-8 border-r border-gray-200 bg-white p-4 laptop:relative laptop:translate-x-0 ${
+        isOpen ? 'fixed left-0 top-0 bottom-0 z-40 translate-x-0' : 'fixed left-0 top-0 bottom-0 z-40 -translate-x-full laptop:translate-x-0'
+      } transition-transform duration-300`}>
       <div className="flex flex-col gap-4">
         <Link href="/" className="flex items-center gap-2 px-2 py-2">
           <span className="material-symbols-outlined text-3xl text-[#2b6cee]">
@@ -66,5 +82,6 @@ export default function SettingsSidebar({
         </nav>
       </div>
     </aside>
+    </>
   );
 }
