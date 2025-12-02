@@ -99,12 +99,6 @@ export default function AppHeader() {
             <div className="flex items-center gap-3 min-w-0 justify-end md:w-[284px]">
               {isLoggedIn ? (
                 <>
-                  <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white sm:flex btn-shimmer btn-glow"
-                  >
-                    新規プロジェクト追加
-                  </button>
                   <div className="relative shrink-0">
                     {profile?.avatar_url ? (
                       <button
@@ -202,23 +196,33 @@ export default function AppHeader() {
                   </span>
                   スキル一覧
                 </Link>
-                {isLoggedIn && (
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      setIsModalOpen(true);
-                    }}
+                {!isLoggedIn && (
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-[#2b6cee] px-4 py-3 text-sm font-bold text-white btn-shimmer"
                   >
-                    <span className="material-symbols-outlined text-lg">add</span>
-                    新規プロジェクト追加
-                  </button>
+                    <span className="material-symbols-outlined text-lg">login</span>
+                    ログイン
+                  </Link>
                 )}
               </nav>
             </div>
           </>
         )}
       </header>
+
+      {/* Floating Action Button - 新規プロジェクト追加 */}
+      {isLoggedIn && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="fixed bottom-6 left-6 z-50 flex size-14 items-center justify-center rounded-full bg-[#2b6cee] text-white shadow-lg transition-all hover:scale-110 hover:bg-[#2357c9] hover:shadow-xl btn-glow sm:size-16"
+          aria-label="新規プロジェクト追加"
+        >
+          <span className="material-symbols-outlined text-2xl sm:text-3xl">add</span>
+        </button>
+      )}
+
       <NewProjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

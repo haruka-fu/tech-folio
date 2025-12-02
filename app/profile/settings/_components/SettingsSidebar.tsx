@@ -12,7 +12,7 @@ export default function SettingsSidebar({
   onTabChange,
 }: SettingsSidebarProps) {
   return (
-    <aside className="hidden md:flex w-64 flex-col gap-8 border-r border-gray-200 bg-white p-4">
+    <aside className="flex w-64 flex-col gap-8 border-r border-gray-200 bg-white p-4 h-screen overflow-y-auto">
       <div className="flex flex-col gap-4">
         <Link href="/" className="flex items-center gap-2 px-2 py-2">
           <span className="material-symbols-outlined text-3xl text-[#2b6cee]">

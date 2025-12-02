@@ -17,6 +17,7 @@ type SettingsTab = "profile" | "qiita";
 export default function ProfileSettingsPage() {
   const { profile, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -145,31 +146,43 @@ export default function ProfileSettingsPage() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#F7F8FA]">
       <div className="flex h-full flex-1">
-        <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* デスクトップ用サイドバー */}
+        <div className="hidden md:block">
+          <SettingsSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+
+        {/* モバイル用サイドバーオーバーレイ */}
+        {isSidebarOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40 bg-black/20 md:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+            <div className="fixed left-0 top-0 z-50 h-full md:hidden slide-in-left">
+              <SettingsSidebar
+                activeTab={activeTab}
+                onTabChange={(tab) => {
+                  setActiveTab(tab);
+                  setIsSidebarOpen(false);
+                }}
+              />
+            </div>
+          </>
+        )}
 
         <main className="flex flex-1 flex-col p-4 sm:p-6 md:p-10">
-          {/* モバイル用タブナビゲーション */}
-          <div className="mb-6 flex gap-2 border-b border-gray-200 md:hidden">
+          {/* モバイル用ヘッダー */}
+          <div className="mb-6 flex items-center gap-3 md:hidden">
             <button
-              onClick={() => setActiveTab("profile")}
-              className={`flex-1 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === "profile"
-                  ? "border-[#2b6cee] text-[#2b6cee]"
-                  : "border-transparent text-gray-500"
-              }`}
+              onClick={() => setIsSidebarOpen(true)}
+              className="flex items-center justify-center rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100"
+              aria-label="メニューを開く"
             >
-              プロフィール設定
+              <span className="material-symbols-outlined text-2xl">menu</span>
             </button>
-            <button
-              onClick={() => setActiveTab("qiita")}
-              className={`flex-1 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
-                activeTab === "qiita"
-                  ? "border-[#2b6cee] text-[#2b6cee]"
-                  : "border-transparent text-gray-500"
-              }`}
-            >
-              Qiita連携
-            </button>
+            <h1 className="text-lg font-bold text-gray-900">
+              {activeTab === "profile" ? "プロフィール設定" : "Qiita連携"}
+            </h1>
           </div>
 
           <div className="mx-auto w-full max-w-4xl">
