@@ -197,15 +197,15 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
       </div>
 {/* デモモードバナー */}      {isDemoMode && (        <div className="rounded-lg border border-[#f59e0b] bg-[#fffbeb] p-4 flex items-start gap-3">          <span className="material-symbols-outlined text-[#f59e0b] text-2xl shrink-0">            info          </span>          <div className="flex-1">            <p className="text-sm font-medium text-[#92400e] mb-1">              デモモード            </p>            <p className="text-sm text-[#92400e]">              これはサンプルデータです。実際のスキル統計を管理するには、              <a href="/login" className="underline font-medium hover:text-[#78350f]">                ログイン              </a>              してください。            </p>          </div>        </div>      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* 左側: プロフィール情報 */}
-        <div className="lg:col-span-1 flex flex-col gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
+        {/* 860px以下: 縦並び、860px～1280px: 横並び、1280px以上: 縦並び */}
+        <div className="grid grid-cols-1 tablet:grid-cols-2 xl:flex xl:flex-col xl:col-span-1 gap-8">
           <ProfileCard profile={profile} isLoading={isLoading} />
           <RoleStatsCard roleStats={roleStats} isLoading={isLoading} />
         </div>
 
-        {/* 右側: スキル表示 */}
-        <div className="lg:col-span-2 flex flex-col gap-8">
+        {/* スキル表示 */}
+        <div className="xl:col-span-2">
           <SkillStatsCard
             skillStats={skillStats}
             isLoading={isLoading}

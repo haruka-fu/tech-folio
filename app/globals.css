@@ -36,6 +36,8 @@ html.light {
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --font-sans: var(--font-noto-sans-jp);
+  --breakpoint-laptop: 1200px;
+  --breakpoint-tablet: 860px;
 }
 
 @media (prefers-color-scheme: dark) {
