@@ -28,6 +28,8 @@ export default function DateRangeFields({
           id="startDate"
           type="month"
           required
+          min="1980-01"
+          max="2030-12"
           className="input-field w-full"
           value={startDate}
           onChange={(e) => onStartDateChange(e.target.value)}
@@ -45,6 +47,8 @@ export default function DateRangeFields({
           type="month"
           required={!isCurrent}
           disabled={isCurrent}
+          min="1980-01"
+          max="2030-12"
           className="input-field w-full disabled:bg-slate-100 disabled:text-slate-400"
           value={endDate}
           onChange={(e) => onEndDateChange(e.target.value)}

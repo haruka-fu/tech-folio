@@ -3,14 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import NewProjectModal from "./NewProjectModal";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase";
 
 const supabase = createClient();
 
 export default function AppHeader() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,13 +55,13 @@ export default function AppHeader() {
     <>
       {/* フローティング新規プロジェクト追加ボタン（600px以下、ログイン時のみ） */}
       {isLoggedIn && (
-        <button
-          onClick={() => setIsModalOpen(true)}
+        <Link
+          href="/projects/new"
           className="fixed bottom-6 left-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#2b6cee] text-white shadow-lg transition-all hover:bg-[#2357c9] sm:hidden btn-glow"
           aria-label="新規プロジェクト追加"
         >
           <span className="material-symbols-outlined text-3xl">add</span>
-        </button>
+        </Link>
       )}
 
       <header className="sticky top-0 z-20 border-b border-[#e5e7eb] bg-white/80 backdrop-blur-sm slide-in-up">
@@ -99,12 +97,12 @@ export default function AppHeader() {
             <div className="flex items-center gap-3 w-[284px] justify-end">
               {isLoggedIn ? (
                 <>
-                  <button
-                    onClick={() => setIsModalOpen(true)}
+                  <Link
+                    href="/projects/new"
                     className="hidden h-10 min-w-[84px] items-center justify-center rounded-lg bg-[#2b6cee] px-4 text-sm font-bold text-white laptop:flex btn-shimmer btn-glow"
                   >
                     新規プロジェクト追加
-                  </button>
+                  </Link>
                   <div className="relative shrink-0">
                     {profile?.avatar_url ? (
                       <button
@@ -155,18 +153,16 @@ export default function AppHeader() {
                             </Link>
                             {/* 区切り線（860px以下で表示） */}
                             <div className="border-t border-slate-200 my-1 tablet:hidden" />
-                            <button
-                              onClick={() => {
-                                setIsMenuOpen(false);
-                                setIsModalOpen(true);
-                              }}
+                            <Link
+                              href="/projects/new"
+                              onClick={() => setIsMenuOpen(false)}
                               className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors laptop:hidden"
                             >
                               <span className="material-symbols-outlined text-xl text-scale">
                                 add_circle
                               </span>
                               新規プロジェクト追加
-                            </button>
+                            </Link>
                             <Link
                               href="/profile/settings"
                               onClick={() => setIsMenuOpen(false)}
@@ -208,10 +204,6 @@ export default function AppHeader() {
           </div>
         </div>
       </header>
-      <NewProjectModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </>
   );
 }

@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role } from "@/lib/supabase";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { formatPeriod } from "@/lib/utils/format";
+import DeleteConfirmModal from "@/app/projects/_components/DeleteConfirmModal";
 
 const supabase = createClient();
 
@@ -16,6 +17,8 @@ export default function ProjectDetailPage() {
   const { isLoading: isAuthLoading } = useAuth();
   const [project, setProject] = useState<ProjectWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     // 認証チェック中はデータを読み込まない
@@ -23,36 +26,22 @@ export default function ProjectDetailPage() {
 
     const loadProject = async () => {
       try {
-        // プロジェクトデータを取得
-        const { data: projectData, error: projectError } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('id', params.id)
-          .single();
+        // 全てのクエリを並列実行
+        const [
+          { data: projectData, error: projectError },
+          { data: tags, error: tagsError },
+          { data: roles, error: rolesError },
+          { data: projectTags, error: projectTagsError }
+        ] = await Promise.all([
+          supabase.from('projects').select('*').eq('id', params.id).single(),
+          supabase.from('tags').select('*'),
+          supabase.from('roles').select('*').order('display_order', { ascending: true }),
+          supabase.from('project_tags').select('*').eq('project_id', params.id)
+        ]);
 
         if (projectError) throw projectError;
-
-        // タグデータを取得
-        const { data: tags, error: tagsError } = await supabase
-          .from('tags')
-          .select('*');
-
         if (tagsError) throw tagsError;
-
-        // ロールデータを取得
-        const { data: roles, error: rolesError } = await supabase
-          .from('roles')
-          .select('*')
-          .order('display_order', { ascending: true });
-
         if (rolesError) throw rolesError;
-
-        // プロジェクトとタグの関連を取得
-        const { data: projectTags, error: projectTagsError } = await supabase
-          .from('project_tags')
-          .select('*')
-          .eq('project_id', params.id);
-
         if (projectTagsError) throw projectTagsError;
 
         // プロジェクトに関連するタグを取得
@@ -81,6 +70,42 @@ export default function ProjectDetailPage() {
 
     loadProject();
   }, [params.id, isAuthLoading]);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+
+    try {
+      // プロジェクトタグの関連を削除
+      const { error: tagsError } = await supabase
+        .from('project_tags')
+        .delete()
+        .eq('project_id', params.id);
+
+      if (tagsError) {
+        console.error('Tags delete error:', tagsError);
+        throw new Error(`タグ削除エラー: ${tagsError.message}`);
+      }
+
+      // プロジェクトを削除
+      const { error: projectError } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', params.id);
+
+      if (projectError) {
+        console.error('Project delete error:', projectError);
+        throw new Error(`プロジェクト削除エラー: ${projectError.message}`);
+      }
+
+      // 成功したら一覧ページへ遷移
+      router.push('/projects');
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert(error instanceof Error ? error.message : '削除に失敗しました');
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -240,13 +265,19 @@ export default function ProjectDetailPage() {
               <span>戻る</span>
             </button>
             <div className="flex gap-3">
-              <button className="btn-secondary flex items-center justify-center gap-2">
+              <Link
+                href={`/projects/${params.id}/edit`}
+                className="btn-secondary flex items-center justify-center gap-2"
+              >
                 <span className="material-symbols-outlined text-base">
                   edit
                 </span>
                 <span>編集</span>
-              </button>
-              <button className="flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-3 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50">
+              </Link>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="flex items-center justify-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-3 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+              >
                 <span className="material-symbols-outlined text-base">
                   delete
                 </span>
@@ -256,6 +287,15 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       </main>
+
+      {/* 削除確認モーダル */}
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        projectTitle={project.title}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }
