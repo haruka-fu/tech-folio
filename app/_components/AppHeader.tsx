@@ -55,6 +55,17 @@ export default function AppHeader() {
 
   return (
     <>
+      {/* フローティング新規プロジェクト追加ボタン（600px以下、ログイン時のみ） */}
+      {isLoggedIn && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="fixed bottom-6 left-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#2b6cee] text-white shadow-lg transition-all hover:bg-[#2357c9] sm:hidden btn-glow"
+          aria-label="新規プロジェクト追加"
+        >
+          <span className="material-symbols-outlined text-3xl">add</span>
+        </button>
+      )}
+
       <header className="sticky top-0 z-20 border-b border-[#e5e7eb] bg-white/80 backdrop-blur-sm slide-in-up">
         <div className="mx-auto w-full max-w-[1400px] px-4 py-4 sm:px-6 lg:px-10">
           <div className="flex items-center justify-between">
@@ -75,8 +86,8 @@ export default function AppHeader() {
                 <h2 className="text-lg font-semibold">TechFolio</h2>
               </Link>
             </div>
-            {/* 中央：ナビゲーション */}
-            <div className="hidden flex-1 items-center justify-center gap-6 text-base text-[#6b7280] md:flex">
+            {/* 中央：ナビゲーション（860px以上で表示） */}
+            <div className="hidden flex-1 items-center justify-center gap-6 text-base text-[#6b7280] tablet:flex">
               <Link href="/projects" className="underline-center transition-colors hover:text-[#111827]">
                 アクティビティ
               </Link>
@@ -121,6 +132,29 @@ export default function AppHeader() {
                         />
                         <div className="absolute right-0 z-20 mt-2 w-56 rounded-lg border border-slate-200 bg-white shadow-lg scale-in">
                           <div className="py-1">
+                            {/* ナビゲーションリンク（860px以下で表示） */}
+                            <Link
+                              href="/projects"
+                              onClick={() => setIsMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors tablet:hidden"
+                            >
+                              <span className="material-symbols-outlined text-xl text-scale">
+                                folder_open
+                              </span>
+                              アクティビティ
+                            </Link>
+                            <Link
+                              href="/profile"
+                              onClick={() => setIsMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors tablet:hidden"
+                            >
+                              <span className="material-symbols-outlined text-xl text-scale">
+                                person
+                              </span>
+                              スキル一覧
+                            </Link>
+                            {/* 区切り線（860px以下で表示） */}
+                            <div className="border-t border-slate-200 my-1 tablet:hidden" />
                             <button
                               onClick={() => {
                                 setIsMenuOpen(false);
