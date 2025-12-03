@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Tag } from "@/lib/supabase";
+import { useProjectForm } from "@/lib/hooks/useProjectForm";
 import TagSelector from "@/app/_components/TagSelector";
 import ProjectBasicFields from "@/app/_components/modal/ProjectBasicFields";
 import DateRangeFields from "@/app/_components/modal/DateRangeFields";
@@ -17,31 +17,29 @@ export default function EditProjectPage() {
   const params = useParams();
   const projectId = params.id as string;
 
-  const [formData, setFormData] = useState({
-    title: "",
-    summary: "",
-    description: "",
-    startDate: "",
-    endDate: "",
-    roles: [] as string[],
-    tags: [] as string[],
-  });
+  const {
+    formData,
+    setFormData,
+    isCurrent,
+    setIsCurrent,
+    availableTags,
+    availablePhases,
+    handleAddPhase,
+    handleRemovePhase,
+    handleToggleTag,
+    handleRemoveTag,
+  } = useProjectForm();
 
-  const [isCurrent, setIsCurrent] = useState(false);
-  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-  const [availablePhases, setAvailablePhases] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // プロジェクトデータと関連データを並列読み込み
+  // プロジェクトデータを読み込み
   useEffect(() => {
-    const loadData = async () => {
+    const loadProject = async () => {
       try {
-        // 並列クエリ実行でパフォーマンス向上
         const [
           { data: project, error: projectError },
-          { data: tags, error: tagsError },
           { data: allRoles, error: rolesError }
         ] = await Promise.all([
           supabase
@@ -58,25 +56,14 @@ export default function EditProjectPage() {
             .eq('id', projectId)
             .single(),
           supabase
-            .from('tags')
-            .select('*')
-            .order('name', { ascending: true }),
-          supabase
             .from('roles')
             .select('*')
             .order('display_order', { ascending: true })
         ]);
 
         if (projectError) throw projectError;
-        if (tagsError) throw tagsError;
         if (rolesError) throw rolesError;
         if (!project) throw new Error('プロジェクトが見つかりません');
-
-        // タグ一覧を設定
-        setAvailableTags(tags || []);
-
-        // 工程一覧を設定
-        setAvailablePhases(allRoles?.map(role => role.name) || []);
 
         // 役割IDから役割名を取得
         let roleNames: string[] = [];
@@ -115,45 +102,9 @@ export default function EditProjectPage() {
       }
     };
 
-    loadData();
+    loadProject();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
-
-  const handleAddPhase = (phase: string) => {
-    if (!formData.roles.includes(phase)) {
-      setFormData({
-        ...formData,
-        roles: [...formData.roles, phase],
-      });
-    }
-  };
-
-  const handleRemovePhase = (phase: string) => {
-    setFormData({
-      ...formData,
-      roles: formData.roles.filter((r) => r !== phase),
-    });
-  };
-
-  const handleToggleTag = (tagName: string) => {
-    if (formData.tags.includes(tagName)) {
-      setFormData({
-        ...formData,
-        tags: formData.tags.filter((t) => t !== tagName),
-      });
-    } else {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, tagName],
-      });
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter((t) => t !== tag),
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -255,7 +206,7 @@ export default function EditProjectPage() {
             className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             <span className="material-symbols-outlined text-lg">close</span>
-            閉じる
+            <span className="hidden sm:inline">閉じる</span>
           </Link>
         </div>
 
