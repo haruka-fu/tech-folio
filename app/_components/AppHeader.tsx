@@ -53,11 +53,11 @@ export default function AppHeader() {
 
   return (
     <>
-      {/* フローティング新規プロジェクト追加ボタン（600px以下、ログイン時のみ） */}
+      {/* フローティング新規プロジェクト追加ボタン（1200px未満、ログイン時のみ） */}
       {isLoggedIn && (
         <Link
           href="/projects/new"
-          className="fixed bottom-6 left-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#2b6cee] text-white shadow-lg transition-all hover:bg-[#2357c9] sm:hidden btn-glow"
+          className="fixed bottom-6 left-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#2b6cee] text-white shadow-lg transition-all hover:bg-[#2357c9] laptop:hidden btn-glow"
           aria-label="新規プロジェクト追加"
         >
           <span className="material-symbols-outlined text-3xl">add</span>
