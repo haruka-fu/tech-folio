@@ -4,8 +4,17 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { ProjectWithDetails, Role, Tag } from "@/lib/supabase";
-import { demoProjects, demoQiitaArticles, demoRoles, demoTags } from "@/lib/demo-data";
-import type { QiitaArticle, TimelineItem, FilterTab } from "@/lib/types/project";
+import {
+  demoProjects,
+  demoQiitaArticles,
+  demoRoles,
+  demoTags,
+} from "@/lib/demo-data";
+import type {
+  QiitaArticle,
+  TimelineItem,
+  FilterTab,
+} from "@/lib/types/project";
 import { createTagColorMap } from "@/lib/utils/tags";
 import PageHeader from "@/app/projects/_components/PageHeader";
 import DemoModeBanner from "@/app/projects/_components/DemoModeBanner";
@@ -47,7 +56,9 @@ export default function ProjectsPage() {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
         // 未ログイン時はデモデータを表示
         if (!user) {
@@ -63,18 +74,18 @@ export default function ProjectsPage() {
         }
 
         const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('user_id', user.id)
+          .from("profiles")
+          .select("id")
+          .eq("user_id", user.id)
           .maybeSingle();
 
         if (profileError) {
-          console.error('Profile error:', profileError);
+          console.error("Profile error:", profileError);
           throw profileError;
         }
 
         if (!profile) {
-          router.push('/register');
+          router.push("/register");
           return;
         }
 
@@ -83,23 +94,19 @@ export default function ProjectsPage() {
           { data: projects, error: projectsError },
           { data: tags, error: tagsError },
           { data: roles, error: rolesError },
-          { data: projectTags, error: projectTagsError }
+          { data: projectTags, error: projectTagsError },
         ] = await Promise.all([
           supabase
-            .from('projects')
-            .select('*')
-            .eq('profile_id', profile.id)
-            .order('period_start', { ascending: false }),
+            .from("projects")
+            .select("*")
+            .eq("profile_id", profile.id)
+            .order("period_start", { ascending: false }),
+          supabase.from("tags").select("*"),
           supabase
-            .from('tags')
-            .select('*'),
-          supabase
-            .from('roles')
-            .select('*')
-            .order('display_order', { ascending: true }),
-          supabase
-            .from('project_tags')
-            .select('*')
+            .from("roles")
+            .select("*")
+            .order("display_order", { ascending: true }),
+          supabase.from("project_tags").select("*"),
         ]);
 
         if (projectsError) throw projectsError;
@@ -110,27 +117,30 @@ export default function ProjectsPage() {
         setAllTags(tags || []);
         setAllRoles(roles || []);
 
-        const projectsWithDetails: ProjectWithDetails[] = (projects || []).map(project => {
-          const relatedTagIds = (projectTags || [])
-            .filter(pt => pt.project_id === project.id)
-            .map(pt => pt.tag_id);
+        const projectsWithDetails: ProjectWithDetails[] = (projects || []).map(
+          (project) => {
+            const relatedTagIds = (projectTags || [])
+              .filter((pt) => pt.project_id === project.id)
+              .map((pt) => pt.tag_id);
 
-          const projectTagObjects = (tags || [])
-            .filter(tag => relatedTagIds.includes(tag.id));
+            const projectTagObjects = (tags || []).filter((tag) =>
+              relatedTagIds.includes(tag.id)
+            );
 
-          const roleNames = (project.roles || [])
-            .map((roleId: number) => {
-              const role = (roles || []).find((r: Role) => r.id === roleId);
-              return role?.name || '';
-            })
-            .filter((name: string) => name !== '');
+            const roleNames = (project.roles || [])
+              .map((roleId: number) => {
+                const role = (roles || []).find((r: Role) => r.id === roleId);
+                return role?.name || "";
+              })
+              .filter((name: string) => name !== "");
 
-          return {
-            ...project,
-            tags: projectTagObjects,
-            role_names: roleNames,
-          };
-        });
+            return {
+              ...project,
+              tags: projectTagObjects,
+              role_names: roleNames,
+            };
+          }
+        );
 
         setAllProjects(projectsWithDetails);
       } catch (error) {
@@ -175,13 +185,13 @@ export default function ProjectsPage() {
     const tagCountMap = new Map<string, number>();
 
     // DBの全タグを初期化（件数0で）
-    allTags.forEach(tag => {
+    allTags.forEach((tag) => {
       tagCountMap.set(tag.name, 0);
     });
 
     // プロジェクトのタグをカウント
-    allProjects.forEach(project => {
-      project.tags.forEach(tag => {
+    allProjects.forEach((project) => {
+      project.tags.forEach((tag) => {
         const count = tagCountMap.get(tag.name) || 0;
         tagCountMap.set(tag.name, count + 1);
       });
@@ -196,10 +206,10 @@ export default function ProjectsPage() {
   // 使用中の工程一覧を取得
   const usedRoles = useMemo(() => {
     const roleSet = new Set<string>();
-    allProjects.forEach(project => {
-      project.role_names.forEach(role => roleSet.add(role));
+    allProjects.forEach((project) => {
+      project.role_names.forEach((role) => roleSet.add(role));
     });
-    return allRoles.filter(role => roleSet.has(role.name));
+    return allRoles.filter((role) => roleSet.has(role.name));
   }, [allProjects, allRoles]);
 
   // プロジェクトとQiita記事を統合して日付順にソート
@@ -214,10 +224,13 @@ export default function ProjectsPage() {
           project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           project.summary.toLowerCase().includes(searchQuery.toLowerCase());
 
-        const matchesTag = selectedTags.length === 0 || selectedTags.some(selectedTag =>
-          project.tags.some(tag => tag.name === selectedTag)
-        );
-        const matchesRole = !selectedRole || project.role_names.includes(selectedRole);
+        const matchesTag =
+          selectedTags.length === 0 ||
+          selectedTags.some((selectedTag) =>
+            project.tags.some((tag) => tag.name === selectedTag)
+          );
+        const matchesRole =
+          !selectedRole || project.role_names.includes(selectedRole);
 
         if (matchesSearch && matchesTag && matchesRole) {
           items.push({
@@ -239,9 +252,13 @@ export default function ProjectsPage() {
             article.title.toLowerCase().includes(searchQuery.toLowerCase());
 
           // Qiita記事のタグでもフィルタリング
-          const matchesTag = selectedTags.length === 0 || selectedTags.some(selectedTag =>
-            article.tags.some(tag => tag.name.toLowerCase() === selectedTag.toLowerCase())
-          );
+          const matchesTag =
+            selectedTags.length === 0 ||
+            selectedTags.some((selectedTag) =>
+              article.tags.some(
+                (tag) => tag.name.toLowerCase() === selectedTag.toLowerCase()
+              )
+            );
 
           if (matchesSearch && matchesTag) {
             items.push({
@@ -258,7 +275,14 @@ export default function ProjectsPage() {
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
 
     return items;
-  }, [allProjects, qiitaArticles, searchQuery, selectedTags, selectedRole, activeTab]);
+  }, [
+    allProjects,
+    qiitaArticles,
+    searchQuery,
+    selectedTags,
+    selectedRole,
+    activeTab,
+  ]);
 
   // ページネーション
   const displayedItems = useMemo(() => {
@@ -278,7 +302,12 @@ export default function ProjectsPage() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading && !qiitaLoading) {
+        if (
+          entries[0].isIntersecting &&
+          hasMore &&
+          !isLoading &&
+          !qiitaLoading
+        ) {
           setPage((prev) => prev + 1);
         }
       },
