@@ -30,36 +30,33 @@ export default function NewProjectPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // タグ一覧を取得
+  // タグ一覧と工程一覧を並列取得
   useEffect(() => {
-    const loadTags = async () => {
-      const { data: tags } = await supabase
-        .from('tags')
-        .select('*')
-        .order('name', { ascending: true });
+    const loadData = async () => {
+      // 並列クエリ実行でパフォーマンス向上
+      const [
+        { data: tags },
+        { data: roles }
+      ] = await Promise.all([
+        supabase
+          .from('tags')
+          .select('*')
+          .order('name', { ascending: true }),
+        supabase
+          .from('roles')
+          .select('name')
+          .order('display_order', { ascending: true })
+      ]);
 
       if (tags) {
         setAvailableTags(tags);
       }
-    };
-
-    loadTags();
-  }, []);
-
-  // 工程一覧を取得
-  useEffect(() => {
-    const loadPhases = async () => {
-      const { data: roles } = await supabase
-        .from('roles')
-        .select('name')
-        .order('display_order', { ascending: true });
-
       if (roles) {
         setAvailablePhases(roles.map(role => role.name));
       }
     };
 
-    loadPhases();
+    loadData();
   }, []);
 
   const handleAddPhase = (phase: string) => {

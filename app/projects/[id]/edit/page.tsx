@@ -34,37 +34,59 @@ export default function EditProjectPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // プロジェクトデータを読み込み
+  // プロジェクトデータと関連データを並列読み込み
   useEffect(() => {
-    const loadProject = async () => {
+    const loadData = async () => {
       try {
-        // プロジェクトデータを取得
-        const { data: project, error: projectError } = await supabase
-          .from('projects')
-          .select(`
-            *,
-            project_tags (
-              tags (
-                id,
-                name
+        // 並列クエリ実行でパフォーマンス向上
+        const [
+          { data: project, error: projectError },
+          { data: tags, error: tagsError },
+          { data: allRoles, error: rolesError }
+        ] = await Promise.all([
+          supabase
+            .from('projects')
+            .select(`
+              *,
+              project_tags (
+                tags (
+                  id,
+                  name
+                )
               )
-            )
-          `)
-          .eq('id', projectId)
-          .single();
+            `)
+            .eq('id', projectId)
+            .single(),
+          supabase
+            .from('tags')
+            .select('*')
+            .order('name', { ascending: true }),
+          supabase
+            .from('roles')
+            .select('*')
+            .order('display_order', { ascending: true })
+        ]);
 
         if (projectError) throw projectError;
+        if (tagsError) throw tagsError;
+        if (rolesError) throw rolesError;
         if (!project) throw new Error('プロジェクトが見つかりません');
+
+        // タグ一覧を設定
+        setAvailableTags(tags || []);
+
+        // 工程一覧を設定
+        setAvailablePhases(allRoles?.map(role => role.name) || []);
 
         // 役割IDから役割名を取得
         let roleNames: string[] = [];
-        if (project.roles && project.roles.length > 0) {
-          const { data: rolesData } = await supabase
-            .from('roles')
-            .select('id, name')
-            .in('id', project.roles);
-
-          roleNames = rolesData?.map(role => role.name) || [];
+        if (project.roles && project.roles.length > 0 && allRoles) {
+          roleNames = project.roles
+            .map((roleId: number) => {
+              const role = allRoles.find(r => r.id === roleId);
+              return role?.name || '';
+            })
+            .filter((name: string) => name !== '');
         }
 
         // タグ名を取得
@@ -93,40 +115,8 @@ export default function EditProjectPage() {
       }
     };
 
-    loadProject();
+    loadData();
   }, [projectId]);
-
-  // タグ一覧を取得
-  useEffect(() => {
-    const loadTags = async () => {
-      const { data: tags } = await supabase
-        .from('tags')
-        .select('*')
-        .order('name', { ascending: true });
-
-      if (tags) {
-        setAvailableTags(tags);
-      }
-    };
-
-    loadTags();
-  }, []);
-
-  // 工程一覧を取得
-  useEffect(() => {
-    const loadPhases = async () => {
-      const { data: roles } = await supabase
-        .from('roles')
-        .select('name')
-        .order('display_order', { ascending: true });
-
-      if (roles) {
-        setAvailablePhases(roles.map(role => role.name));
-      }
-    };
-
-    loadPhases();
-  }, []);
 
   const handleAddPhase = (phase: string) => {
     if (!formData.roles.includes(phase)) {

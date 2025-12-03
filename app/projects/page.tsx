@@ -78,34 +78,37 @@ export default function ProjectsPage() {
           return;
         }
 
-        const { data: projects, error: projectsError } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('profile_id', profile.id)
-          .order('period_start', { ascending: false });
+        // 並列クエリ実行でパフォーマンス向上
+        const [
+          { data: projects, error: projectsError },
+          { data: tags, error: tagsError },
+          { data: roles, error: rolesError },
+          { data: projectTags, error: projectTagsError }
+        ] = await Promise.all([
+          supabase
+            .from('projects')
+            .select('*')
+            .eq('profile_id', profile.id)
+            .order('period_start', { ascending: false }),
+          supabase
+            .from('tags')
+            .select('*'),
+          supabase
+            .from('roles')
+            .select('*')
+            .order('display_order', { ascending: true }),
+          supabase
+            .from('project_tags')
+            .select('*')
+        ]);
 
         if (projectsError) throw projectsError;
-
-        const { data: tags, error: tagsError } = await supabase
-          .from('tags')
-          .select('*');
-
         if (tagsError) throw tagsError;
-        setAllTags(tags || []);
-
-        const { data: roles, error: rolesError } = await supabase
-          .from('roles')
-          .select('*')
-          .order('display_order', { ascending: true });
-
         if (rolesError) throw rolesError;
-        setAllRoles(roles || []);
-
-        const { data: projectTags, error: projectTagsError } = await supabase
-          .from('project_tags')
-          .select('*');
-
         if (projectTagsError) throw projectTagsError;
+
+        setAllTags(tags || []);
+        setAllRoles(roles || []);
 
         const projectsWithDetails: ProjectWithDetails[] = (projects || []).map(project => {
           const relatedTagIds = (projectTags || [])
