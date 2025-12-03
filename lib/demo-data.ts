@@ -189,7 +189,6 @@ export const demoProfile: Profile = {
   id: "demo-profile-1",
   user_id: "demo-user",
   display_name: "山田 太郎",
-  user_id_change_count: 0,
   email: "demo@example.com",
   avatar_url: null,
   bio: "フルスタックエンジニアとして5年以上の経験があります。React/Next.jsを中心としたフロントエンド開発から、Node.js/Pythonを使ったバックエンド開発まで幅広く対応可能です。",

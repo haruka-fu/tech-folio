@@ -36,6 +36,18 @@ export async function startGoogleOAuth(): Promise<void> {
 export async function createProfile(params: CreateProfileParams) {
   const { userId, displayName, email, avatarUrl } = params;
 
+  // デバッグ: 挿入しようとしているデータを確認
+  console.log('Creating profile with params:', {
+    user_id: userId,
+    display_name: displayName,
+    email: email,
+    avatar_url: avatarUrl,
+  });
+
+  // 現在の認証ユーザーを確認
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  console.log('Current auth user:', currentUser?.id);
+
   const { data, error } = await supabase
     .from('profiles')
     .insert({
@@ -47,19 +59,32 @@ export async function createProfile(params: CreateProfileParams) {
     .select();
 
   if (error) {
-    console.error('Profile creation error:', {
+    // エラーの完全な内容をログ出力
+    console.error('Profile creation error - Full error object:', error);
+    console.error('Profile creation error - Stringified:', JSON.stringify(error, null, 2));
+    console.error('Profile creation error - Details:', {
       message: error.message,
       details: error.details,
       hint: error.hint,
       code: error.code,
     });
-    throw new Error(error.message || 'プロフィールの作成に失敗しました');
+
+    // より詳細なエラーメッセージを作成
+    let errorMessage = 'プロフィールの作成に失敗しました';
+    if (error.message) {
+      errorMessage = error.message;
+    } else if (error.code) {
+      errorMessage = `プロフィールの作成に失敗しました (エラーコード: ${error.code})`;
+    }
+
+    throw new Error(errorMessage);
   }
 
   if (!data || data.length === 0) {
     throw new Error('プロフィールの作成に失敗しました: データが返されませんでした');
   }
 
+  console.log('Profile created successfully:', data[0]);
   return data[0];
 }
 

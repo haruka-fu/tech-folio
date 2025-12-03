@@ -22,6 +22,7 @@ export default function ProfileSettingsPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+  const [isDisplayNameValid, setIsDisplayNameValid] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -128,7 +129,14 @@ export default function ProfileSettingsPage() {
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (error) {
       console.error('Save error:', error);
-      setError(error instanceof Error ? error.message : '保存に失敗しました');
+
+      // データベースのユニーク制約エラーを検出
+      if (error instanceof Error && (error.message.includes('duplicate') || error.message.includes('unique'))) {
+        setDisplayNameError('この表示名は既に使用されています。別の表示名を入力してください。');
+        setError('この表示名は既に使用されています。別の表示名を入力してください。');
+      } else {
+        setError(error instanceof Error ? error.message : '保存に失敗しました');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -212,6 +220,7 @@ export default function ProfileSettingsPage() {
                   displayName={formData.display_name}
                   bio={formData.bio}
                   displayNameError={displayNameError}
+                  currentUserId={profile?.user_id || ""}
                   onDisplayNameChange={(value) => {
                     setFormData({ ...formData, display_name: value });
                     setDisplayNameError(null);
@@ -219,6 +228,7 @@ export default function ProfileSettingsPage() {
                   onBioChange={(value) =>
                     setFormData({ ...formData, bio: value })
                   }
+                  onValidationChange={(isValid) => setIsDisplayNameValid(isValid)}
                 />
               </section>
 
@@ -254,7 +264,7 @@ export default function ProfileSettingsPage() {
                   <button
                     type="button"
                     onClick={handleSave}
-                    disabled={isSaving}
+                    disabled={isSaving || !isDisplayNameValid}
                     className="flex min-w-[84px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#2b6cee] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2b6cee]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSaving ? (

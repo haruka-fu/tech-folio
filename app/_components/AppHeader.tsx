@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase";
@@ -13,40 +13,42 @@ export default function AppHeader() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+  const pathname = usePathname(); // 現在のパスを取得
 
-  // プロフィール情報を取得
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
+  // プロフィール情報を取得する関数
+  const loadProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) {
-          setIsLoggedIn(false);
-          setProfile(null);
-          return;
-        }
+      if (!user) {
+        setIsLoggedIn(false);
+        setProfile(null);
+        return;
+      }
 
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-        if (profileData) {
-          setProfile(profileData);
-          setIsLoggedIn(true);
-        } else {
-          // ユーザーは認証済みだがプロフィールが未作成
-          setIsLoggedIn(false);
-          setProfile(null);
-        }
-      } catch (error) {
-        console.error('Failed to load profile:', error);
+      if (profileData) {
+        setProfile(profileData);
+        setIsLoggedIn(true);
+      } else {
+        // ユーザーは認証済みだがプロフィールが未作成
         setIsLoggedIn(false);
         setProfile(null);
       }
-    };
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+      setIsLoggedIn(false);
+      setProfile(null);
+    }
+  };
 
+  // 初回ロードと認証状態の変更を監視
+  useEffect(() => {
     // 初回ロード
     loadProfile();
 
@@ -65,6 +67,11 @@ export default function AppHeader() {
       subscription.unsubscribe();
     };
   }, []);
+
+  // ページ遷移のたびにログイン状態をチェック
+  useEffect(() => {
+    loadProfile();
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
