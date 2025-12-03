@@ -151,6 +151,7 @@ export default function ProjectsPage() {
     };
 
     loadProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Qiita記事を取得（ログイン済みの場合のみ）
