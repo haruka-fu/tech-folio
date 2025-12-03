@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/supabase";
@@ -13,32 +13,65 @@ export default function AppHeader() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+  const pathname = usePathname(); // 現在のパスを取得
 
-  // プロフィール情報を取得
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
+  // プロフィール情報を取得する関数
+  const loadProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) return;
-
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (profileData) {
-          setProfile(profileData);
-        setIsLoggedIn(true);
-        }
-      } catch (error) {
-        console.error('Failed to load profile:', error);
+      if (!user) {
+        setIsLoggedIn(false);
+        setProfile(null);
+        return;
       }
-    };
 
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (profileData) {
+        setProfile(profileData);
+        setIsLoggedIn(true);
+      } else {
+        // ユーザーは認証済みだがプロフィールが未作成
+        setIsLoggedIn(false);
+        setProfile(null);
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+      setIsLoggedIn(false);
+      setProfile(null);
+    }
+  };
+
+  // 初回ロードと認証状態の変更を監視
+  useEffect(() => {
+    // 初回ロード
     loadProfile();
+
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        loadProfile();
+      } else if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false);
+        setProfile(null);
+      }
+    });
+
+    // クリーンアップ
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  // ページ遷移のたびにログイン状態をチェック
+  useEffect(() => {
+    loadProfile();
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -53,11 +86,11 @@ export default function AppHeader() {
 
   return (
     <>
-      {/* フローティング新規プロジェクト追加ボタン（600px以下、ログイン時のみ） */}
+      {/* フローティング新規プロジェクト追加ボタン（1200px未満、ログイン時のみ） */}
       {isLoggedIn && (
         <Link
           href="/projects/new"
-          className="fixed bottom-6 left-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#2b6cee] text-white shadow-lg transition-all hover:bg-[#2357c9] sm:hidden btn-glow"
+          className="fixed bottom-6 left-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#2b6cee] text-white shadow-lg transition-all hover:bg-[#2357c9] laptop:hidden btn-glow"
           aria-label="新規プロジェクト追加"
         >
           <span className="material-symbols-outlined text-3xl">add</span>

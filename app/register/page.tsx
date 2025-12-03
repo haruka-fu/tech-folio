@@ -139,6 +139,18 @@ export default function RegisterPage() {
         return;
       }
 
+      // 表示名の重複を最終確認（データベースレベルで直接チェック）
+      const { data: duplicateDisplayName } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('display_name', displayName.trim())
+        .maybeSingle();
+
+      if (duplicateDisplayName) {
+        setError('この表示名は既に使用されています。別の表示名を入力してください。');
+        return;
+      }
+
       // ステップ1: プロフィールを作成
       // Google OAuthからアバターURLを取得
       const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture || null;
@@ -163,11 +175,19 @@ export default function RegisterPage() {
       await verifyRegistration(profile.id);
 
       // 登録完了後、プロジェクト一覧ページへリダイレクト
-      router.push('/projects');
+      // window.location.hrefを使用して完全なページリロードを行い、
+      // 認証状態を確実に反映させる
+      window.location.href = '/projects';
 
     } catch (error) {
       console.error('Registration error:', error);
-      setError(error instanceof Error ? error.message : '登録に失敗しました');
+
+      // データベースのユニーク制約エラーを検出
+      if (error instanceof Error && error.message.includes('duplicate') || error instanceof Error && error.message.includes('unique')) {
+        setError('この表示名は既に使用されています。別の表示名を入力してください。');
+      } else {
+        setError(error instanceof Error ? error.message : '登録に失敗しました');
+      }
     } finally {
       setIsLoading(false);
     }

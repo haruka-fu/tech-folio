@@ -1,64 +1,145 @@
 # TechFolio
 
-このプロジェクトは [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) で作成した [Next.js](https://nextjs.org) アプリケーションです。
+エンジニアのためのポートフォリオ管理ダッシュボードアプリケーション。
+プロジェクト実績を管理・可視化し、スキルセットを効果的にアピールできるツールです。
 
-## 開発環境の起動
+## 📌 プロジェクト概要
 
-まず開発サーバーを起動します。
+Tech Folioは、エンジニアが自身のプロジェクト実績、使用技術、担当工程を整理・管理できる個人向けポートフォリオ管理システムです。
+
+### 主な機能
+
+- **認証機能**: Google OAuthによるログイン
+- **プロジェクト管理**: プロジェクトの登録・編集・削除（CRUD操作）
+- **技術タグ管理**: 技術スタックのタグ付けとカテゴリ分類
+- **スキル可視化**: 使用技術の統計表示とグラフ化
+- **Qiita連携**: Qiita記事の取得と統合表示
+- **レスポンシブデザイン**: デスクトップ・タブレット・モバイル対応
+
+## 🛠️ 技術スタック
+
+- **フロントエンド**: Next.js 16.0.3 (App Router)
+- **言語**: TypeScript
+- **バックエンド**: Supabase (Auth + Database + Storage)
+- **スタイリング**: Tailwind CSS v4
+- **アイコン**: Material Symbols Outlined
+- **フォント**: Noto Sans JP (Google Fonts)
+- **ホスティング**: Vercel
+
+## 🚀 セットアップ
+
+### 前提条件
+
+- Node.js 18.x 以上
+- npm または yarn
+- Supabaseアカウント
+
+### 環境変数の設定
+
+`.env.local` ファイルを作成し、以下の環境変数を設定してください：
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
+
+### インストールと起動
 
 ```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
 npm run dev
-# または
-yarn dev
-# または
-pnpm dev
-# または
-bun dev
+
+# ブラウザで http://localhost:3000 を開く
 ```
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開くと結果を確認できます。
-
-`app/page.tsx` を編集するとページが自動でリロードされます。
-
-このプロジェクトでは Vercel の新しいフォントファミリーである [Geist](https://vercel.com/font) を [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) で最適化して読み込んでいます。
-
-## さらに学ぶ
-
-Next.js について学ぶには以下のリソースを参照してください。
-
-- [Next.js ドキュメント](https://nextjs.org/docs) – フレームワークの機能や API を網羅。
-- [Learn Next.js](https://nextjs.org/learn) – 対話型のチュートリアル。
-
-また、[Next.js の GitHub リポジトリ](https://github.com/vercel/next.js) ではフィードバックやコントリビュートも歓迎されています。
-
-## Vercel へのデプロイ
-
-Next.js アプリをデプロイする最も簡単な方法は、Next.js の開発元が提供する [Vercel プラットフォーム](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) を利用することです。
-
-詳しくは [Next.js のデプロイメントガイド](https://nextjs.org/docs/app/building-your-application/deploying) を参照してください。
-
-## Docker で実行する
-
-ローカルで本番用イメージをビルドするには次を実行します。
+### ビルドと本番起動
 
 ```bash
+# プロダクションビルド
+npm run build
+
+# 本番モードで起動
+npm start
+```
+
+## 📖 使い方
+
+### 1. ログイン
+
+トップページからGoogleアカウントでログインします。
+
+### 2. プロジェクトの追加
+
+- **デスクトップ（1200px以上）**: ヘッダーの「新規プロジェクト追加」ボタンをクリック
+- **タブレット・モバイル（1200px未満）**: 左下のフローティング＋ボタンをクリック
+
+プロジェクト情報を入力：
+- プロジェクト名
+- 概要・詳細説明
+- 期間（開始日・終了日）
+- 担当工程（要件定義、設計、開発、テスト等）
+- 使用技術タグ
+
+### 3. スキル一覧の確認
+
+「スキル一覧」ページで、使用技術の統計とグラフを確認できます。
+
+### 4. Qiita連携（オプション）
+
+設定画面からQiitaアカウントと連携すると、投稿記事がアクティビティに表示されます。
+
+## 🐳 Dockerで実行
+
+### 本番用イメージ
+
+```bash
+# イメージのビルド
 docker build -t tech-folio .
-```
 
-続いてコンテナを起動し、ポート 3000 を公開します。
-
-```bash
+# コンテナの起動
 docker run --rm -p 3000:3000 tech-folio
 ```
 
-ブラウザで [http://localhost:3000](http://localhost:3000) を開くと、Docker 上で稼働しているアプリを確認できます。イメージは Next.js の standalone 出力を利用しているため、コードを変更した際は再ビルドが必要です。
-
-## Docker で開発する
-
-ホットリロード対応の開発環境を Docker で立ち上げたい場合は、付属の `docker-compose.dev.yml` を利用します。ソースコードはボリュームとしてコンテナにマウントし、ローカルの変更が即座に反映されます。
+### 開発環境（ホットリロード対応）
 
 ```bash
+# 開発環境の起動
 docker compose -f docker-compose.dev.yml up
+
+# 終了は Ctrl + C
 ```
 
-初回起動時に依存関係をインストールし、その後 `npm run dev` が実行されます。開発サーバーは [http://localhost:3000](http://localhost:3000) で利用できます。終了するには `Ctrl + C` でコンテナを停止してください。
+## 📚 ドキュメント
+
+詳細な設計書や仕様書は `docs/` フォルダを参照してください：
+
+- [要件定義書](docs/01_要件定義-20251203.md) - システム概要と機能要件
+- [DB・API設計](docs/02_DB設計-20251203.md) - データベース設計とAPI仕様
+- [開発工程](docs/03_開発工程-20251203.md) - 開発フェーズとタスク管理
+- [CLAUDE.md](.claude/CLAUDE.md) - 開発者向けプロジェクトガイド
+
+## 🎨 UI/UX 仕様
+
+### レスポンシブブレークポイント
+
+- **モバイル**: ~860px（縦並びレイアウト）
+- **タブレット**: 860px~1200px（一部横並び）
+- **デスクトップ**: 1200px~（フルレイアウト）
+
+### 新規プロジェクト追加ボタンの表示
+
+- **1200px以上**: ヘッダー内に「新規プロジェクト追加」ボタン
+- **1200px未満**: 左下にフローティング＋アイコンボタン
+
+## 📝 ライセンス
+
+このプロジェクトは個人利用を想定しています。
+
+## 🔗 関連リンク
+
+- [Next.js ドキュメント](https://nextjs.org/docs)
+- [Supabase ドキュメント](https://supabase.com/docs)
+- [Tailwind CSS ドキュメント](https://tailwindcss.com/docs)
