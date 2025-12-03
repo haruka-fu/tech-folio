@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ProjectWithDetails } from "@/lib/supabase";
 import { formatPeriod } from "@/lib/utils/format";
 
@@ -15,19 +16,32 @@ export default function ProjectCard({
   isDemoMode,
   onDemoClick,
 }: ProjectCardProps) {
+  const router = useRouter();
+
   const handleClick = (e: React.MouseEvent) => {
     if (isDemoMode) {
       e.preventDefault();
       onDemoClick();
+    } else {
+      router.push(`/projects/${project.id}`);
+    }
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isDemoMode) {
+      onDemoClick();
+    } else {
+      router.push(`/projects/${project.id}/edit`);
     }
   };
 
   return (
-    <Link
+    <div
       key={`project-${project.id}`}
-      href={`/projects/${project.id}`}
+      className={`project-card slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''} cursor-pointer`}
       onClick={handleClick}
-      className={`project-card slide-in-up ${index < 5 ? `stagger-${Math.min(index + 1, 5)}` : ''}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -51,6 +65,15 @@ export default function ProjectCard({
             {formatPeriod(project.period_start, project.period_end, project.is_current)}
           </p>
         </div>
+        {!isDemoMode && (
+          <button
+            onClick={handleEditClick}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            aria-label="編集"
+          >
+            <span className="material-symbols-outlined text-xl">edit</span>
+          </button>
+        )}
       </div>
 
       {/* Tags */}
@@ -82,6 +105,6 @@ export default function ProjectCard({
           ))}
         </div>
       )}
-    </Link>
+    </div>
   );
 }
