@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import type { Tag } from "@/lib/supabase";
+import { useProjectForm } from "@/lib/hooks/useProjectForm";
 import TagSelector from "@/app/_components/TagSelector";
 import ProjectBasicFields from "@/app/_components/modal/ProjectBasicFields";
 import DateRangeFields from "@/app/_components/modal/DateRangeFields";
@@ -14,87 +14,21 @@ const supabase = createClient();
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    title: "",
-    summary: "",
-    description: "",
-    startDate: "",
-    endDate: "",
-    roles: [] as string[],
-    tags: [] as string[],
-  });
+  const {
+    formData,
+    setFormData,
+    isCurrent,
+    setIsCurrent,
+    availableTags,
+    availablePhases,
+    handleAddPhase,
+    handleRemovePhase,
+    handleToggleTag,
+    handleRemoveTag,
+  } = useProjectForm();
 
-  const [isCurrent, setIsCurrent] = useState(false);
-  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-  const [availablePhases, setAvailablePhases] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // タグ一覧と工程一覧を並列取得
-  useEffect(() => {
-    const loadData = async () => {
-      // 並列クエリ実行でパフォーマンス向上
-      const [
-        { data: tags },
-        { data: roles }
-      ] = await Promise.all([
-        supabase
-          .from('tags')
-          .select('*')
-          .order('name', { ascending: true }),
-        supabase
-          .from('roles')
-          .select('name')
-          .order('display_order', { ascending: true })
-      ]);
-
-      if (tags) {
-        setAvailableTags(tags);
-      }
-      if (roles) {
-        setAvailablePhases(roles.map(role => role.name));
-      }
-    };
-
-    loadData();
-  }, []);
-
-  const handleAddPhase = (phase: string) => {
-    if (!formData.roles.includes(phase)) {
-      setFormData({
-        ...formData,
-        roles: [...formData.roles, phase],
-      });
-    }
-  };
-
-  const handleRemovePhase = (phase: string) => {
-    setFormData({
-      ...formData,
-      roles: formData.roles.filter((r) => r !== phase),
-    });
-  };
-
-  const handleToggleTag = (tagName: string) => {
-    if (formData.tags.includes(tagName)) {
-      setFormData({
-        ...formData,
-        tags: formData.tags.filter((t) => t !== tagName),
-      });
-    } else {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, tagName],
-      });
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter((t) => t !== tag),
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
