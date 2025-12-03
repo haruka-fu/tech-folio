@@ -163,7 +163,9 @@ export default function RegisterPage() {
       await verifyRegistration(profile.id);
 
       // 登録完了後、プロジェクト一覧ページへリダイレクト
-      router.push('/projects');
+      // window.location.hrefを使用して完全なページリロードを行い、
+      // 認証状態を確実に反映させる
+      window.location.href = '/projects';
 
     } catch (error) {
       console.error('Registration error:', error);

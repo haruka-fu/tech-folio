@@ -20,7 +20,11 @@ export default function AppHeader() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) return;
+        if (!user) {
+          setIsLoggedIn(false);
+          setProfile(null);
+          return;
+        }
 
         const { data: profileData } = await supabase
           .from('profiles')
@@ -30,14 +34,36 @@ export default function AppHeader() {
 
         if (profileData) {
           setProfile(profileData);
-        setIsLoggedIn(true);
+          setIsLoggedIn(true);
+        } else {
+          // ユーザーは認証済みだがプロフィールが未作成
+          setIsLoggedIn(false);
+          setProfile(null);
         }
       } catch (error) {
         console.error('Failed to load profile:', error);
+        setIsLoggedIn(false);
+        setProfile(null);
       }
     };
 
+    // 初回ロード
     loadProfile();
+
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        loadProfile();
+      } else if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false);
+        setProfile(null);
+      }
+    });
+
+    // クリーンアップ
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {
