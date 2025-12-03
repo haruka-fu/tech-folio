@@ -392,11 +392,6 @@ export default function ProjectsPage() {
               onDemoClick={() => setShowLoginModal(true)}
             />
           </div>
-
-          {/* Mobile Add Button */}
-          <button className="mt-6 flex h-12 w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#2b6cee] px-4 text-base font-bold leading-normal tracking-[0.015em] text-white transition-opacity hover:opacity-90 sm:hidden">
-            <span className="truncate">新規プロジェクト追加</span>
-          </button>
         </div>
       </main>
 
