@@ -206,6 +206,16 @@ export default function AppHeader() {
                               </span>
                               設定
                             </Link>
+                            <Link
+                              href="/contact"
+                              onClick={() => setIsMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-xl text-scale">
+                                contact_support
+                              </span>
+                              お問い合わせ
+                            </Link>
                             <button
                               onClick={() => {
                                 setIsMenuOpen(false);
