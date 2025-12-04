@@ -142,6 +142,15 @@ export default function ProjectsPage() {
           }
         );
 
+        // 進行中のプロジェクト（is_current = true）を優先的に上に表示
+        projectsWithDetails.sort((a, b) => {
+          // is_currentがtrueのものを優先
+          if (a.is_current && !b.is_current) return -1;
+          if (!a.is_current && b.is_current) return 1;
+          // 同じis_currentの場合はperiod_startの降順
+          return new Date(b.period_start).getTime() - new Date(a.period_start).getTime();
+        });
+
         setAllProjects(projectsWithDetails);
       } catch (error) {
         console.error("Failed to load projects:", error);
@@ -272,8 +281,20 @@ export default function ProjectsPage() {
       }
     }
 
-    // 日付の降順でソート
-    items.sort((a, b) => b.date.getTime() - a.date.getTime());
+    // ソート優先順位:
+    // 1. 進行中のプロジェクト（is_current = true）を最優先
+    // 2. その他のプロジェクトとQiita記事を日付降順
+    items.sort((a, b) => {
+      const aIsCurrentProject = a.type === "project" && a.data.is_current;
+      const bIsCurrentProject = b.type === "project" && b.data.is_current;
+
+      // 進行中のプロジェクトを最優先
+      if (aIsCurrentProject && !bIsCurrentProject) return -1;
+      if (!aIsCurrentProject && bIsCurrentProject) return 1;
+
+      // 同じ優先度の場合は日付の降順
+      return b.date.getTime() - a.date.getTime();
+    });
 
     return items;
   }, [
