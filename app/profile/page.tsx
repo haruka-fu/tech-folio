@@ -106,6 +106,19 @@ export default function ProfilePage() {
 
         setRoleStats(roleStatsData);
 
+        // tagsテーブルから全タグを取得
+        const { data: allTags, error: allTagsError } = await supabase
+          .from('tags')
+          .select('*');
+
+        if (allTagsError) throw allTagsError;
+
+        // タグ名（小文字）からタグIDへのマッピングを作成
+        const tagNameToTag = new Map<string, typeof allTags[0]>();
+        (allTags || []).forEach(tag => {
+          tagNameToTag.set(tag.name.toLowerCase(), tag);
+        });
+
         // プロジェクトに紐づくタグを取得
         const { data: projectTags, error: projectTagsError } = await supabase
           .from('project_tags')
@@ -114,26 +127,60 @@ export default function ProfilePage() {
 
         if (projectTagsError) throw projectTagsError;
 
-        // タグの使用回数を集計
-        const tagCounts = new Map<string, number>();
+        // プロジェクトのタグ使用回数を集計（tag.idベース）
+        const projectTagCounts = new Map<string, number>();
         projectTags?.forEach(pt => {
-          const count = tagCounts.get(pt.tag_id) || 0;
-          tagCounts.set(pt.tag_id, count + 1);
+          const count = projectTagCounts.get(pt.tag_id) || 0;
+          projectTagCounts.set(pt.tag_id, count + 1);
         });
 
-        // タグ情報を取得
-        const { data: tags, error: tagsError } = await supabase
-          .from('tags')
-          .select('*')
-          .in('id', Array.from(tagCounts.keys()));
+        // Qiita記事からタグを取得して集計
+        const qiitaTagCounts = new Map<string, number>();
+        try {
+          const qiitaResponse = await fetch('/api/qiita/articles');
+          if (qiitaResponse.ok) {
+            const qiitaData = await qiitaResponse.json();
+            if (qiitaData.articles && qiitaData.articles.length > 0) {
+              // Qiita記事のタグを集計（tagsテーブルに存在するもののみ）
+              qiitaData.articles.forEach((article: { tags: { name: string }[] }) => {
+                article.tags.forEach(tag => {
+                  const tagName = tag.name.toLowerCase();
+                  // tagsテーブルに存在するタグのみカウント
+                  if (tagNameToTag.has(tagName)) {
+                    const count = qiitaTagCounts.get(tagName) || 0;
+                    qiitaTagCounts.set(tagName, count + 1);
+                  }
+                });
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch Qiita articles:", error);
+        }
 
-        if (tagsError) throw tagsError;
+        // tagsテーブルのタグごとに使用回数を合算
+        const combinedTagCounts = new Map<string, { count: number; tag: typeof allTags[0] }>();
+
+        (allTags || []).forEach(tag => {
+          const tagName = tag.name.toLowerCase();
+          const projectCount = projectTagCounts.get(tag.id) || 0;
+          const qiitaCount = qiitaTagCounts.get(tagName) || 0;
+          const totalCount = projectCount + qiitaCount;
+
+          // 使用回数が1回以上のタグのみ追加
+          if (totalCount > 0) {
+            combinedTagCounts.set(tag.id, {
+              count: totalCount,
+              tag: tag,
+            });
+          }
+        });
 
         // タグに使用回数を追加してトップ10を取得
-        const stats: SkillStat[] = (tags || [])
-          .map(tag => ({
+        const stats: SkillStat[] = Array.from(combinedTagCounts.values())
+          .map(({ count, tag }) => ({
             tagName: tag.name,
-            usageCount: tagCounts.get(tag.id) || 0,
+            usageCount: count,
             tag: tag,
           }))
           .sort((a, b) => b.usageCount - a.usageCount)
@@ -192,7 +239,7 @@ function SkillListView({ profile, skillStats, roleStats, isLoading, activeView, 
           スキル一覧
         </h1>
         <p className="text-sm text-slate-600">
-          プロジェクト全体でのスキル統計を表示します。
+          プロジェクトとQiita記事全体でのスキル統計を表示します。
         </p>
       </div>
 {/* デモモードバナー */}      {isDemoMode && (        <div className="rounded-lg border border-[#f59e0b] bg-[#fffbeb] p-4 flex items-start gap-3">          <span className="material-symbols-outlined text-[#f59e0b] text-2xl shrink-0">            info          </span>          <div className="flex-1">            <p className="text-sm font-medium text-[#92400e] mb-1">              デモモード            </p>            <p className="text-sm text-[#92400e]">              これはサンプルデータです。実際のスキル統計を管理するには、              <a href="/login" className="underline font-medium hover:text-[#78350f]">                ログイン              </a>              してください。            </p>          </div>        </div>      )}
