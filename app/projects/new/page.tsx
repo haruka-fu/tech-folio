@@ -179,6 +179,20 @@ export default function NewProjectPage() {
           </Link>
         </div>
 
+        {/* 注意メッセージ */}
+        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <div className="flex items-start gap-3">
+            <span className="material-symbols-outlined text-blue-600">info</span>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-blue-900">このアプリについて</p>
+              <p className="mt-1 text-sm text-blue-700">
+                Tech Folioはスキルセットを可視化し、アピールするためのポートフォリオツールです。
+                実在の企業名や機密情報は入力せず、技術スタックや担当工程などのスキル情報を中心に記載してください。
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* エラーメッセージ */}
         {error && (
           <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
