@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import AppHeader from "./_components/AppHeader";
 import AppFooter from "./_components/AppFooter";
 import "./globals.css";
@@ -40,6 +42,8 @@ export default function RootLayout({
           {children}
         </main>
         <AppFooter />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
